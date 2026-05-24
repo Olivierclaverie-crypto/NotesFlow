@@ -1,17 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 
+// ── Design tokens — Home blue warm ───────────────────────────────────────────
 const C = {
-  bg:"#f9f6f1", surface:"#ffffff", card:"#ffffff",
-  border:"#e8e0d5", borderDark:"#d4c9b8",
-  accent:"#c2500a", accentLight:"#fff3ec", accentBorder:"#f5c4a8",
-  ink:"#1a1714", muted:"#7a6f65", subtle:"#b5a99a",
+  bg:"#fdf8f0",        // fond sable très clair
+  surface:"#ffffff",   // surfaces blanches chaudes
+  card:"#fffcf7",      // cartes légèrement crème
+  border:"#e8d9c0",    // bordures caramel clair
+  borderDark:"#c9b48a",
+  accent:"#2B5A9E",    // bleu acier — accent principal
+  accentLight:"#eaf1fb",
+  accentBorder:"#BAD6F0",
+  ink:"#0F1D2B",       // bleu nuit — texte principal
+  muted:"#5a6e7f",     // muted bleuté
+  subtle:"#8B5E20",    // caramel — éléments discrets
   green:"#2d7a4f", greenLight:"#edf7f1",
   red:"#c0392b", redLight:"#fdf0ef",
-  amber:"#b06000", amberLight:"#fff8ed",
-  blue:"#2c5f8a", blueLight:"#eef4fb",
-  purple:"#5c3d8f", purpleLight:"#f3eefb",
+  amber:"#8B5E20", amberLight:"#fdf3e3",
+  blue:"#2B5A9E", blueLight:"#eaf1fb",
+  gold:"#F5C97A", goldLight:"#fdf8ed",
 };
 
+// ── Chapitres / Tags ──────────────────────────────────────────────────────────
 const CHAPTERS = [
   { id:"marche",     emoji:"📊", label:"Marché" },
   { id:"nouveautes", emoji:"🆕", label:"Nouveautés" },
@@ -25,6 +34,7 @@ const CHAPTERS = [
   { id:"dedicaces",  emoji:"✍️", label:"Demandes de dédicace" },
 ];
 
+// ── Périodes Synthèse ─────────────────────────────────────────────────────────
 const SYNTHESE_PERIODS = [
   { id:"s1", start:"2026-05-22", end:"2026-06-01", label:"Synthèse Mai" },
   { id:"s2", start:"2026-06-01", end:"2026-07-06", label:"Synthèse Juin–Juillet" },
@@ -34,8 +44,9 @@ const SYNTHESE_PERIODS = [
   { id:"s6", start:"2026-11-02", end:"2026-12-07", label:"Synthèse Nov–Déc" },
 ];
 
+// ── Notes existantes importées depuis les événements Synthèse ────────────────
 const IMPORTED_NOTES = [
-  { id:"imp1", text:"Attention offre stick", chapter:"alertes", createdAt:"2026-05-22T08:00:00", imported:true },
+  { id:"imp1", text:"Attention offre stick", chapter:"alertes",     createdAt:"2026-05-22T08:00:00", imported:true },
   { id:"imp2", text:"Forte baisse en hyper Peppa — prudence sur navres PatPat (65% écoulement Osny à Noël)", chapter:"alertes", createdAt:"2026-05-22T08:01:00", imported:true },
   { id:"imp3", text:"Possibilité d'extraire fiches articles Compagnon en JPEG/PNG pour corps de mail", chapter:"propositions", createdAt:"2026-05-22T08:02:00", imported:true },
   { id:"imp4", text:"Dans les e-mails : alerter François avec EAN plutôt que nuart", chapter:"logistique", createdAt:"2026-05-22T08:03:00", imported:true },
@@ -47,6 +58,7 @@ const IMPORTED_NOTES = [
   { id:"imp10",text:"Bonnes performances des beaux livres voyages (VDM)", chapter:"performances", createdAt:"2026-05-22T08:09:00", imported:true },
 ];
 
+// ── RDV Client important ──────────────────────────────────────────────────────
 const CALENDAR_EVENTS = [
   { id:"e1",  title:"LA GRANDE LIBRAIRIE",       start:"2026-05-22T10:00:00", location:"Arras" },
   { id:"e2",  title:"FURET ARRAS",               start:"2026-05-22T11:00:00", location:"Arras" },
@@ -92,6 +104,7 @@ const CALENDAR_EVENTS = [
   { id:"e42", title:"BHV",                       start:"2026-06-25T14:30:00", location:"Paris 4e" },
 ];
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt = d => new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
 const fmtFull = d => new Date(d).toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
 const fmtTime = d => new Date(d).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
@@ -120,6 +133,7 @@ function urgencyStyle(days){
 
 function chapterById(id){ return CHAPTERS.find(c=>c.id===id)||CHAPTERS[0]; }
 
+// ── UI Components ─────────────────────────────────────────────────────────────
 function Tag({chapter, size="sm"}){
   const ch = chapterById(chapter);
   const fs = size==="sm"?11:13;
@@ -180,6 +194,7 @@ const inputStyle = {
   transition:"border-color .15s",
 };
 
+// ── Voice hook ────────────────────────────────────────────────────────────────
 function useVoice(onConfirm){
   const rec=useRef(null);
   const [listening,setListening]=useState(false);
@@ -198,6 +213,7 @@ function useVoice(onConfirm){
   return {listening,transcript,start,stop,confirm,discard};
 }
 
+// ── AI Chat ───────────────────────────────────────────────────────────────────
 function AIChat({period,notes}){
   const [messages,setMessages]=useState([]);
   const [input,setInput]=useState("");
@@ -214,6 +230,9 @@ function AIChat({period,notes}){
       if(!byChapter[n.chapter]) byChapter[n.chapter]=[];
       byChapter[n.chapter].push(n.text);
     });
+    const notesText=CHAPTERS.filter(c=>byChapter[c.id]).map(c=>
+      `### ${c.emoji} ${c.label}\n${byChapter[c.id].map(t=>`- ${t}`).join("\n")}`
+    ).join("\n\n");
     const intro=`Bonjour ! Je suis prêt pour le brainstorming de la **${period.label}** (compilation le ${fmt(period.end)}).\n\nJ'ai ${notes.length} note(s) réparties en ${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :`;
     setMessages([{role:"assistant",content:intro}]);
   },[]);
@@ -257,7 +276,9 @@ Ton : professionnel, concis, orienté action. En français.`,
 
   return(
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      <div style={{maxHeight:340,overflowY:"auto",display:"flex",flexDirection:"column",gap:10,padding:"4px 0"}}>
+      {/* Messages */}
+      <div style={{maxHeight:340,overflowY:"auto",display:"flex",flexDirection:"column",gap:10,
+        padding:"4px 0"}}>
         {messages.map((m,i)=>(
           <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
             <div style={{maxWidth:"85%",padding:"10px 14px",borderRadius:14,fontSize:14,lineHeight:1.65,
@@ -273,11 +294,17 @@ Ton : professionnel, concis, orienté action. En français.`,
         ))}
         {loading&&(
           <div style={{display:"flex",alignItems:"center",gap:8,color:C.muted,fontSize:13,padding:"4px 0"}}>
+            <span style={{display:"flex",gap:4}}>
+              {[0,1,2].map(i=><span key={i} style={{width:6,height:6,borderRadius:"50%",background:C.subtle,
+                animation:`bounce 1s ${i*.2}s infinite`}}/>)}
+            </span>
             Claude rédige…
           </div>
         )}
         <div ref={bottomRef}/>
       </div>
+
+      {/* Input */}
       <div style={{display:"flex",gap:8}}>
         <input value={input} onChange={e=>setInput(e.target.value)}
           onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
@@ -285,6 +312,8 @@ Ton : professionnel, concis, orienté action. En français.`,
           style={{...inputStyle,flex:1,fontSize:13}}/>
         <Btn onClick={send} variant="primary" disabled={loading} style={{padding:"10px 14px"}}>→</Btn>
       </div>
+
+      {/* Rapport exportable */}
       {report&&(
         <div style={{background:C.greenLight,border:`1.5px solid ${C.green}44`,borderRadius:12,padding:14,marginTop:4}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
@@ -298,12 +327,14 @@ Ton : professionnel, concis, orienté action. En français.`,
               }} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📧 Envoyer</Btn>
             </div>
           </div>
+          <div style={{fontSize:12,color:C.green}}>Le rapport sera structuré par chapitres selon vos notes terrain.</div>
         </div>
       )}
     </div>
   );
 }
 
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function NotesFlow(){
   const [tab,setTab]=useState("notes");
   const [notes,setNotes]=useState(()=>{
@@ -318,8 +349,9 @@ export default function NotesFlow(){
   const [filterChapter,setFilterChapter]=useState("all");
   const [selectMode,setSelectMode]=useState(false);
   const [selected,setSelected]=useState(new Set());
-  const [confirmDelete,setConfirmDelete]=useState(null);
+  const [confirmDelete,setConfirmDelete]=useState(null); // null | "single" | "multi"
   const [pendingDeleteId,setPendingDeleteId]=useState(null);
+
   const [noteText,setNoteText]=useState("");
   const [noteChapter,setNoteChapter]=useState("marche");
 
@@ -330,6 +362,7 @@ export default function NotesFlow(){
 
   useEffect(()=>save("nf3_notes",notes),[notes]);
 
+  // Keyboard shortcut
   useEffect(()=>{
     const h=e=>{if(e.ctrlKey&&e.key===" "){e.preventDefault();setCaptureOpen(true);}};
     window.addEventListener("keydown",h);
@@ -350,8 +383,10 @@ export default function NotesFlow(){
 
   const periodNotes=notes.filter(n=>n.period===currentPeriod.id||n.imported);
   const filteredNotes=filterChapter==="all"?periodNotes:periodNotes.filter(n=>n.chapter===filterChapter);
+
   const chapterCounts={};
   periodNotes.forEach(n=>{chapterCounts[n.chapter]=(chapterCounts[n.chapter]||0)+1;});
+
   const upcomingEvents=CALENDAR_EVENTS.filter(e=>new Date(e.start)>=new Date()).slice(0,15);
 
   const tabs=[
@@ -361,16 +396,21 @@ export default function NotesFlow(){
   ];
 
   return(
-    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Georgia', 'Times New Roman', serif",position:"relative"}}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Phenomena'",
+      position:"relative"}}>
+
+      {/* ── Header ── */}
       <div style={{background:C.surface,borderBottom:`1px solid ${C.border}`,position:"sticky",top:0,zIndex:100}}>
+        {/* Top bar */}
         <div style={{padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div>
             <div style={{display:"flex",alignItems:"baseline",gap:10}}>
               <span style={{fontSize:20,fontWeight:800,color:C.accent,letterSpacing:-1,fontFamily:"inherit"}}>NotesFlow</span>
-              <span style={{fontSize:11,color:C.subtle,fontFamily:"'Courier New', monospace"}}>
+              <span style={{fontSize:11,color:C.subtle,fontFamily:"'Phenomena'"}}>
                 {periodNotes.filter(n=>!n.imported).length} note{periodNotes.filter(n=>!n.imported).length!==1?"s":""} · {currentPeriod.label}
               </span>
             </div>
+            {/* Compilation countdown */}
             <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:urg.color}}/>
               <span style={{fontSize:11,color:urg.color,fontWeight:600}}>
@@ -378,14 +418,17 @@ export default function NotesFlow(){
               </span>
             </div>
           </div>
+          {/* Action buttons */}
           <div style={{display:"flex",gap:8}}>
             <button onClick={()=>{setVoiceOpen(true);voice.start();}}
+              title="Dicter une note"
               style={{width:38,height:38,borderRadius:10,background:C.bg,border:`1.5px solid ${C.border}`,
                 color:voice.listening?C.red:C.muted,fontSize:17,cursor:"pointer",
                 display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
               🎙
             </button>
             <button onClick={()=>setCaptureOpen(true)}
+              title="Nouvelle note (Ctrl+Espace)"
               style={{height:38,padding:"0 16px",borderRadius:10,background:C.accent,border:"none",
                 color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",
                 display:"flex",alignItems:"center",gap:6,
@@ -394,6 +437,8 @@ export default function NotesFlow(){
             </button>
           </div>
         </div>
+
+        {/* Tabs */}
         <div style={{display:"flex",paddingLeft:20,borderTop:`1px solid ${C.border}`}}>
           {tabs.map(({key,icon,label})=>(
             <button key={key} onClick={()=>setTab(key)} style={{
@@ -407,9 +452,13 @@ export default function NotesFlow(){
         </div>
       </div>
 
+      {/* ── Content ── */}
       <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 80px"}}>
+
+        {/* NOTES TAB */}
         {tab==="notes"&&(
           <div>
+            {/* Chapter filter pills */}
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
               <button onClick={()=>setFilterChapter("all")} style={{
                 fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
@@ -426,13 +475,17 @@ export default function NotesFlow(){
                 }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?`(${chapterCounts[c.id]})`:""}</button>
               ))}
             </div>
+
+            {/* Selection toolbar */}
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <Btn onClick={()=>{setSelectMode(s=>!s);setSelected(new Set());}}
-                variant={selectMode?"soft":"ghost"} style={{fontSize:12,padding:"5px 12px"}}>
+                variant={selectMode?"soft":"ghost"}
+                style={{fontSize:12,padding:"5px 12px"}}>
                 {selectMode?"✕ Annuler":"☑ Sélectionner"}
               </Btn>
               {selectMode&&selected.size>0&&(
-                <Btn onClick={()=>setConfirmDelete("multi")} variant="danger" style={{fontSize:12,padding:"5px 12px"}}>
+                <Btn onClick={()=>setConfirmDelete("multi")} variant="danger"
+                  style={{fontSize:12,padding:"5px 12px"}}>
                   🗑 Supprimer ({selected.size})
                 </Btn>
               )}
@@ -443,9 +496,11 @@ export default function NotesFlow(){
                 </Btn>
               )}
             </div>
+
             {filteredNotes.length===0
               ? <div style={{textAlign:"center",color:C.subtle,padding:"60px 0",fontSize:15}}>
-                  Aucune note dans ce chapitre.
+                  Aucune note dans ce chapitre.<br/>
+                  <span style={{fontSize:13}}>Appuie sur + Note ou Ctrl+Espace.</span>
                 </div>
               : <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   {filteredNotes.map(note=>{
@@ -466,6 +521,7 @@ export default function NotesFlow(){
                           display:"flex",gap:12,alignItems:"flex-start",
                           transition:"all .15s",cursor:selectMode?"pointer":"default",
                           opacity:note.imported?.85:1}}>
+                        {/* Checkbox or emoji */}
                         {selectMode
                           ? <div style={{width:22,height:22,borderRadius:6,flexShrink:0,marginTop:1,
                               border:`2px solid ${isSel?C.accent:C.border}`,
@@ -486,12 +542,16 @@ export default function NotesFlow(){
                             <span style={{fontSize:11,color:note.imported?C.subtle:C.accent,fontWeight:600}}>
                               {note.imported?"📥 Importé":currentPeriod.label}
                             </span>
+                            {selectMode&&<span style={{fontSize:11,color:C.subtle}}>· {ch.emoji} {ch.label}</span>}
                           </div>
                         </div>
                         {!selectMode&&(
                           <button onClick={e=>{e.stopPropagation();setPendingDeleteId(note.id);setConfirmDelete("single");}}
                             style={{background:"none",border:"none",color:C.subtle,cursor:"pointer",
-                              fontSize:16,padding:4,borderRadius:6,lineHeight:1,flexShrink:0}}>✕</button>
+                              fontSize:16,padding:4,borderRadius:6,lineHeight:1,flexShrink:0,
+                              transition:"color .15s"}}
+                            onMouseOver={e=>e.currentTarget.style.color=C.red}
+                            onMouseOut={e=>e.currentTarget.style.color=C.subtle}>✕</button>
                         )}
                       </div>
                     );
@@ -501,6 +561,7 @@ export default function NotesFlow(){
           </div>
         )}
 
+        {/* ── Confirm delete modal ── */}
         {confirmDelete&&(
           <Modal open={true} onClose={()=>{setConfirmDelete(null);setPendingDeleteId(null);}}
             title="🗑 Confirmer la suppression">
@@ -527,11 +588,14 @@ export default function NotesFlow(){
           </Modal>
         )}
 
+        {/* PLANNING TAB */}
         {tab==="planning"&&(
           <div>
             <div style={{fontSize:12,color:C.muted,marginBottom:14,fontFamily:"monospace"}}>
               Calendrier Client important · {upcomingEvents.length} prochains RDV
             </div>
+
+            {/* Période en cours */}
             <div style={{background:C.accentLight,border:`1.5px solid ${C.accentBorder}`,
               borderRadius:12,padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
@@ -542,6 +606,7 @@ export default function NotesFlow(){
               </div>
               <Pill color={urg.color} bg={urg.bg}>{urg.label}</Pill>
             </div>
+
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {upcomingEvents.map(ev=>{
                 const days=daysLeft(ev.start);
@@ -551,6 +616,7 @@ export default function NotesFlow(){
                   <div key={ev.id} style={{background:C.surface,borderRadius:10,padding:"12px 16px",
                     border:`1.5px solid ${isToday?C.accent:C.border}`,
                     display:"flex",gap:14,alignItems:"center"}}>
+                    {/* Date block */}
                     <div style={{minWidth:40,textAlign:"center",background:isToday?C.accent:C.bg,
                       borderRadius:8,padding:"6px 4px",border:`1px solid ${isToday?C.accent:C.border}`}}>
                       <div style={{fontSize:9,fontWeight:700,color:isToday?"#fff":C.muted,letterSpacing:.5,
@@ -576,8 +642,10 @@ export default function NotesFlow(){
           </div>
         )}
 
+        {/* SYNTHESE TAB */}
         {tab==="synthese"&&(
           <div>
+            {/* Période summary */}
             <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,
               padding:"18px 20px",marginBottom:20}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
@@ -589,6 +657,8 @@ export default function NotesFlow(){
                 </div>
                 <Pill color={urg.color} bg={urg.bg}>{urg.label}</Pill>
               </div>
+
+              {/* Chapters breakdown */}
               <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}>
                 {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
                   <div key={c.id} style={{display:"flex",alignItems:"center",gap:10}}>
@@ -602,10 +672,13 @@ export default function NotesFlow(){
                   </div>
                 ))}
               </div>
+
               <Btn onClick={()=>setChatOpen(true)} variant="primary" style={{width:"100%",justifyContent:"center",display:"flex"}}>
                 💬 Lancer le brainstorming & générer le rapport
               </Btn>
             </div>
+
+            {/* Toutes les périodes */}
             <div style={{fontSize:12,color:C.muted,marginBottom:10,fontWeight:600,letterSpacing:.5,textTransform:"uppercase"}}>
               Calendrier des synthèses
             </div>
@@ -634,11 +707,15 @@ export default function NotesFlow(){
         )}
       </div>
 
+      {/* ── Capture Modal ── */}
       <Modal open={captureOpen} onClose={()=>setCaptureOpen(false)} title="📝 Nouvelle note">
+        {/* Auto-assigned period badge */}
         <div style={{background:C.accentLight,border:`1px solid ${C.accentBorder}`,borderRadius:8,
           padding:"8px 12px",marginBottom:16,fontSize:12,color:C.accent,fontWeight:600}}>
           ⚡ Rattachée automatiquement à : <strong>{currentPeriod.label}</strong> · compilation le {fmt(currentPeriod.end)}
         </div>
+
+        {/* Chapter selector */}
         <div style={{marginBottom:12}}>
           <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>Chapitre</label>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
@@ -653,23 +730,28 @@ export default function NotesFlow(){
             ))}
           </div>
         </div>
+
+        {/* Text input */}
         <textarea value={noteText} onChange={e=>setNoteText(e.target.value)} rows={4}
-          placeholder="Ta note terrain…" autoFocus
+          placeholder="Ta note terrain…"
+          autoFocus
           onKeyDown={e=>{if(e.metaKey&&e.key==="Enter")addNote();}}
           style={{...inputStyle,resize:"vertical",marginBottom:16,lineHeight:1.6}}/>
+
         <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
           <Btn onClick={()=>setCaptureOpen(false)}>Annuler</Btn>
           <Btn onClick={addNote} variant="primary">Enregistrer ⌘↵</Btn>
         </div>
       </Modal>
 
+      {/* ── Voice Modal ── */}
       <Modal open={voiceOpen} onClose={()=>{voice.stop();setVoiceOpen(false);}} title="🎙 Dictée vocale">
         <div style={{textAlign:"center",padding:"12px 0"}}>
           <div style={{width:72,height:72,borderRadius:"50%",margin:"0 auto 16px",
             background:voice.listening?C.redLight:C.bg,
             border:`2px solid ${voice.listening?C.red:C.border}`,
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,
-            transition:"all .3s"}}>
+            transition:"all .3s",animation:voice.listening?"ripple 1.5s infinite":undefined}}>
             🎙
           </div>
           <p style={{fontWeight:700,color:voice.listening?C.red:C.muted,marginBottom:12}}>
@@ -693,6 +775,7 @@ export default function NotesFlow(){
         </div>
       </Modal>
 
+      {/* ── Brainstorming Modal ── */}
       <Modal open={chatOpen} onClose={()=>setChatOpen(false)}
         title={`💬 Brainstorming — ${currentPeriod.label}`} wide={true}>
         <AIChat period={currentPeriod} notes={periodNotes}/>
@@ -704,6 +787,7 @@ export default function NotesFlow(){
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(192,57,43,.3)} 70%{box-shadow:0 0 0 12px rgba(192,57,43,0)} 100%{box-shadow:0 0 0 0 rgba(192,57,43,0)} }
         ::-webkit-scrollbar{width:4px;height:4px}
         ::-webkit-scrollbar-track{background:transparent}
+        @import url('https://fonts.cdnfonts.com/css/phenomena');
         ::-webkit-scrollbar-thumb{background:#d4c9b8;border-radius:4px}
         textarea:focus, input:focus, select:focus { border-color: ${C.accent} !important; }
         button:active { transform: scale(.97); }
