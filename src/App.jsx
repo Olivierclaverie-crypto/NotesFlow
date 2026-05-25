@@ -1,4 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<style>
+body{margin:0;padding:20px;font-family:sans-serif;background:#fdf8f0;}
+button{background:#2B5A9E;color:white;border:none;padding:14px 28px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;width:100%;}
+#status{margin-top:12px;font-size:14px;color:#2d7a4f;font-weight:600;text-align:center;}
+</style>
+</head>
+<body>
+<button onclick="copyCode()">📋 Copier le code NotesFlow</button>
+<div id="status"></div>
+<script>
+const CODE = `import { useState, useEffect, useRef } from "react";
 
 // ── Design tokens — Home blue warm ───────────────────────────────────────────
 const C = {
@@ -126,9 +139,9 @@ function getNextPeriod() {
 function urgencyStyle(days){
   if(days<0)  return {color:C.red,   bg:C.redLight,   label:"Dépassé"};
   if(days===0)return {color:C.red,   bg:C.redLight,   label:"Aujourd'hui"};
-  if(days<=3) return {color:C.amber, bg:C.amberLight, label:`J-${days}`};
-  if(days<=10)return {color:C.accent,bg:C.accentLight,label:`J-${days}`};
-  return             {color:C.green, bg:C.greenLight,  label:`J-${days}`};
+  if(days<=3) return {color:C.amber, bg:C.amberLight, label:\`J-\${days}\`};
+  if(days<=10)return {color:C.accent,bg:C.accentLight,label:\`J-\${days}\`};
+  return             {color:C.green, bg:C.greenLight,  label:\`J-\${days}\`};
 }
 
 function chapterById(id){ return CHAPTERS.find(c=>c.id===id)||CHAPTERS[0]; }
@@ -139,7 +152,7 @@ function Tag({chapter, size="sm"}){
   const fs = size==="sm"?11:13;
   return(
     <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:fs,fontWeight:600,
-      background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`,
+      background:C.accentLight,color:C.accent,border:\`1px solid \${C.accentBorder}\`,
       padding:"2px 8px",borderRadius:20,whiteSpace:"nowrap"}}>
       {ch.emoji} {ch.label}
     </span>
@@ -155,10 +168,10 @@ function Btn({onClick,children,variant="ghost",style={},disabled=false}){
     borderRadius:8,fontSize:13,fontWeight:600,padding:"8px 16px",transition:"all .15s",opacity:disabled?.5:1};
   const variants={
     ghost:{background:"transparent",color:C.muted},
-    primary:{background:C.accent,color:"#fff",boxShadow:`0 2px 8px ${C.accent}44`},
-    outline:{background:"transparent",color:C.accent,border:`1.5px solid ${C.accent}`},
-    soft:{background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`},
-    danger:{background:C.redLight,color:C.red,border:`1px solid ${C.red}44`},
+    primary:{background:C.accent,color:"#fff",boxShadow:\`0 2px 8px \${C.accent}44\`},
+    outline:{background:"transparent",color:C.accent,border:\`1.5px solid \${C.accent}\`},
+    soft:{background:C.accentLight,color:C.accent,border:\`1px solid \${C.accentBorder}\`},
+    danger:{background:C.redLight,color:C.red,border:\`1px solid \${C.red}44\`},
   };
   return <button onClick={disabled?undefined:onClick} style={{...base,...variants[variant],...style}}>{children}</button>;
 }
@@ -169,7 +182,7 @@ function Modal({open,onClose,title,children,wide=false}){
     <div style={{position:"fixed",inset:0,background:"rgba(26,23,20,.55)",backdropFilter:"blur(4px)",
       zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}
       onClick={onClose}>
-      <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:20,padding:28,
+      <div style={{background:C.surface,border:\`1px solid \${C.border}\`,borderRadius:20,padding:28,
         width:"100%",maxWidth:wide?640:460,maxHeight:"88vh",overflowY:"auto",
         boxShadow:"0 24px 60px rgba(0,0,0,.18)"}}
         onClick={e=>e.stopPropagation()}>
@@ -188,7 +201,7 @@ function Modal({open,onClose,title,children,wide=false}){
 }
 
 const inputStyle = {
-  background:C.bg, border:`1.5px solid ${C.border}`, color:C.ink,
+  background:C.bg, border:\`1.5px solid \${C.border}\`, color:C.ink,
   padding:"10px 14px", borderRadius:10, fontSize:14, outline:"none",
   fontFamily:"inherit", width:"100%", boxSizing:"border-box",
   transition:"border-color .15s",
@@ -231,9 +244,9 @@ function AIChat({period,notes}){
       byChapter[n.chapter].push(n.text);
     });
     const notesText=CHAPTERS.filter(c=>byChapter[c.id]).map(c=>
-      `### ${c.emoji} ${c.label}\n${byChapter[c.id].map(t=>`- ${t}`).join("\n")}`
-    ).join("\n\n");
-    const intro=`Bonjour ! Je suis prêt pour le brainstorming de la **${period.label}** (compilation le ${fmt(period.end)}).\n\nJ'ai ${notes.length} note(s) réparties en ${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :`;
+      \`### \${c.emoji} \${c.label}\\n\${byChapter[c.id].map(t=>\`- \${t}\`).join("\\n")}\`
+    ).join("\\n\\n");
+    const intro=\`Bonjour ! Je suis prêt pour le brainstorming de la **\${period.label}** (compilation le \${fmt(period.end)}).\\n\\nJ'ai \${notes.length} note(s) réparties en \${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :\`;
     setMessages([{role:"assistant",content:intro}]);
   },[]);
 
@@ -248,21 +261,21 @@ function AIChat({period,notes}){
     const byChapter={};
     notes.forEach(n=>{if(!byChapter[n.chapter])byChapter[n.chapter]=[];byChapter[n.chapter].push(n.text);});
     const notesText=CHAPTERS.filter(c=>byChapter[c.id]).map(c=>
-      `### ${c.emoji} ${c.label}\n${byChapter[c.id].map(t=>`- ${t}`).join("\n")}`
-    ).join("\n\n");
+      \`### \${c.emoji} \${c.label}\\n\${byChapter[c.id].map(t=>\`- \${t}\`).join("\\n")}\`
+    ).join("\\n\\n");
 
     try{
       const res=await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
-          system:`Tu es un assistant de terrain pour un commercial éditorial expérimenté. 
-Période : ${period.label} (du ${fmt(period.start)} au ${fmt(period.end)}).
-Notes terrain par chapitre :\n${notesText}
+          system:\`Tu es un assistant de terrain pour un commercial éditorial expérimenté. 
+Période : \${period.label} (du \${fmt(period.start)} au \${fmt(period.end)}).
+Notes terrain par chapitre :\\n\${notesText}
 
 Aide à brainstormer et affiner le rapport. 
 Quand l'utilisateur demande le rapport final, génère un rapport professionnel structuré par chapitres (uniquement ceux qui ont des notes), avec pour chaque chapitre : synthèse des points clés, actions recommandées. 
 Termine par une section "Points prioritaires" avec les 3-5 actions urgentes.
-Ton : professionnel, concis, orienté action. En français.`,
+Ton : professionnel, concis, orienté action. En français.\`,
           messages:newMessages.map(m=>({role:m.role,content:m.content}))})});
       const data=await res.json();
       const reply=data.content?.map(b=>b.text||"").join("")||"Erreur.";
@@ -286,7 +299,7 @@ Ton : professionnel, concis, orienté action. En français.`,
               color:m.role==="user"?"#fff":C.ink,
               borderBottomRightRadius:m.role==="user"?3:14,
               borderBottomLeftRadius:m.role==="assistant"?3:14,
-              border:m.role==="assistant"?`1px solid ${C.border}`:"none",
+              border:m.role==="assistant"?\`1px solid \${C.border}\`:"none",
               whiteSpace:"pre-wrap"}}>
               {m.content}
             </div>
@@ -296,7 +309,7 @@ Ton : professionnel, concis, orienté action. En français.`,
           <div style={{display:"flex",alignItems:"center",gap:8,color:C.muted,fontSize:13,padding:"4px 0"}}>
             <span style={{display:"flex",gap:4}}>
               {[0,1,2].map(i=><span key={i} style={{width:6,height:6,borderRadius:"50%",background:C.subtle,
-                animation:`bounce 1s ${i*.2}s infinite`}}/>)}
+                animation:\`bounce 1s \${i*.2}s infinite\`}}/>)}
             </span>
             Claude rédige…
           </div>
@@ -315,15 +328,15 @@ Ton : professionnel, concis, orienté action. En français.`,
 
       {/* Rapport exportable */}
       {report&&(
-        <div style={{background:C.greenLight,border:`1.5px solid ${C.green}44`,borderRadius:12,padding:14,marginTop:4}}>
+        <div style={{background:C.greenLight,border:\`1.5px solid \${C.green}44\`,borderRadius:12,padding:14,marginTop:4}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Rapport prêt à l'export</span>
             <div style={{display:"flex",gap:8}}>
               <Btn onClick={()=>navigator.clipboard.writeText(report)} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📋 Copier</Btn>
               <Btn onClick={()=>{
-                const sub=encodeURIComponent(`${period.label} — Synthèse terrain`);
+                const sub=encodeURIComponent(\`\${period.label} — Synthèse terrain\`);
                 const body=encodeURIComponent(report);
-                window.location.href=`mailto:?subject=${sub}&body=${body}`;
+                window.location.href=\`mailto:?subject=\${sub}&body=\${body}\`;
               }} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📧 Envoyer</Btn>
             </div>
           </div>
@@ -396,17 +409,17 @@ export default function NotesFlow(){
   ];
 
   return(
-    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Phenomena'",
+    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Nunito', sans-serif",
       position:"relative"}}>
 
       {/* ── Header ── */}
-      <div style={{background:C.surface,borderBottom:`1px solid ${C.border}`,position:"sticky",top:0,zIndex:100}}>
+      <div style={{background:C.surface,borderBottom:\`1px solid \${C.border}\`,position:"sticky",top:0,zIndex:100}}>
         {/* Top bar */}
         <div style={{padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div>
             <div style={{display:"flex",alignItems:"baseline",gap:10}}>
               <span style={{fontSize:20,fontWeight:800,color:C.accent,letterSpacing:-1,fontFamily:"inherit"}}>NotesFlow</span>
-              <span style={{fontSize:11,color:C.subtle,fontFamily:"'Phenomena'"}}>
+              <span style={{fontSize:11,color:C.subtle,fontFamily:"'Nunito', sans-serif"}}>
                 {periodNotes.filter(n=>!n.imported).length} note{periodNotes.filter(n=>!n.imported).length!==1?"s":""} · {currentPeriod.label}
               </span>
             </div>
@@ -422,7 +435,7 @@ export default function NotesFlow(){
           <div style={{display:"flex",gap:8}}>
             <button onClick={()=>{setVoiceOpen(true);voice.start();}}
               title="Dicter une note"
-              style={{width:38,height:38,borderRadius:10,background:C.bg,border:`1.5px solid ${C.border}`,
+              style={{width:38,height:38,borderRadius:10,background:C.bg,border:\`1.5px solid \${C.border}\`,
                 color:voice.listening?C.red:C.muted,fontSize:17,cursor:"pointer",
                 display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
               🎙
@@ -432,20 +445,20 @@ export default function NotesFlow(){
               style={{height:38,padding:"0 16px",borderRadius:10,background:C.accent,border:"none",
                 color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",
                 display:"flex",alignItems:"center",gap:6,
-                boxShadow:`0 2px 12px ${C.accent}55`,fontFamily:"inherit"}}>
+                boxShadow:\`0 2px 12px \${C.accent}55\`,fontFamily:"inherit"}}>
               + Note
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div style={{display:"flex",paddingLeft:20,borderTop:`1px solid ${C.border}`}}>
+        <div style={{display:"flex",paddingLeft:20,borderTop:\`1px solid \${C.border}\`}}>
           {tabs.map(({key,icon,label})=>(
             <button key={key} onClick={()=>setTab(key)} style={{
               padding:"10px 16px",border:"none",background:"transparent",cursor:"pointer",
               fontFamily:"inherit",fontSize:13,fontWeight:tab===key?700:400,
               color:tab===key?C.accent:C.muted,
-              borderBottom:tab===key?`2px solid ${C.accent}`:"2px solid transparent",
+              borderBottom:tab===key?\`2px solid \${C.accent}\`:"2px solid transparent",
               transition:"all .15s",display:"flex",alignItems:"center",gap:5,
             }}>{icon} {label}</button>
           ))}
@@ -464,15 +477,15 @@ export default function NotesFlow(){
                 fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
                 background:filterChapter==="all"?C.accent:C.bg,
                 color:filterChapter==="all"?"#fff":C.muted,
-                border:`1px solid ${filterChapter==="all"?C.accent:C.border}`,fontFamily:"inherit",
+                border:\`1px solid \${filterChapter==="all"?C.accent:C.border}\`,fontFamily:"inherit",
               }}>Tous ({periodNotes.length})</button>
               {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
                 <button key={c.id} onClick={()=>setFilterChapter(c.id)} style={{
                   fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
                   background:filterChapter===c.id?C.accent:C.bg,
                   color:filterChapter===c.id?"#fff":C.muted,
-                  border:`1px solid ${filterChapter===c.id?C.accent:C.border}`,fontFamily:"inherit",
-                }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?`(${chapterCounts[c.id]})`:""}</button>
+                  border:\`1px solid \${filterChapter===c.id?C.accent:C.border}\`,fontFamily:"inherit",
+                }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?\`(\${chapterCounts[c.id]})\`:""}</button>
               ))}
             </div>
 
@@ -517,14 +530,14 @@ export default function NotesFlow(){
                           });
                         }}
                         style={{background:isSel?C.accentLight:C.surface,borderRadius:12,padding:"14px 16px",
-                          border:`1.5px solid ${isSel?C.accent:C.border}`,
+                          border:\`1.5px solid \${isSel?C.accent:C.border}\`,
                           display:"flex",gap:12,alignItems:"flex-start",
                           transition:"all .15s",cursor:selectMode?"pointer":"default",
                           opacity:note.imported?.85:1}}>
                         {/* Checkbox or emoji */}
                         {selectMode
                           ? <div style={{width:22,height:22,borderRadius:6,flexShrink:0,marginTop:1,
-                              border:`2px solid ${isSel?C.accent:C.border}`,
+                              border:\`2px solid \${isSel?C.accent:C.border}\`,
                               background:isSel?C.accent:"transparent",
                               display:"flex",alignItems:"center",justifyContent:"center",
                               color:"#fff",fontSize:13,fontWeight:700}}>
@@ -568,7 +581,7 @@ export default function NotesFlow(){
             <p style={{fontSize:14,color:C.muted,lineHeight:1.6,marginBottom:20}}>
               {confirmDelete==="single"
                 ? "Supprimer cette note définitivement ?"
-                : `Supprimer les ${selected.size} notes sélectionnées définitivement ?`}
+                : \`Supprimer les \${selected.size} notes sélectionnées définitivement ?\`}
               <br/><span style={{fontSize:12,color:C.subtle}}>Cette action est irréversible.</span>
             </p>
             <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
@@ -596,7 +609,7 @@ export default function NotesFlow(){
             </div>
 
             {/* Période en cours */}
-            <div style={{background:C.accentLight,border:`1.5px solid ${C.accentBorder}`,
+            <div style={{background:C.accentLight,border:\`1.5px solid \${C.accentBorder}\`,
               borderRadius:12,padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
                 <div style={{fontWeight:700,color:C.accent,fontSize:14}}>⚡ {currentPeriod.label}</div>
@@ -614,11 +627,11 @@ export default function NotesFlow(){
                 const isToday=days===0;
                 return(
                   <div key={ev.id} style={{background:C.surface,borderRadius:10,padding:"12px 16px",
-                    border:`1.5px solid ${isToday?C.accent:C.border}`,
+                    border:\`1.5px solid \${isToday?C.accent:C.border}\`,
                     display:"flex",gap:14,alignItems:"center"}}>
                     {/* Date block */}
                     <div style={{minWidth:40,textAlign:"center",background:isToday?C.accent:C.bg,
-                      borderRadius:8,padding:"6px 4px",border:`1px solid ${isToday?C.accent:C.border}`}}>
+                      borderRadius:8,padding:"6px 4px",border:\`1px solid \${isToday?C.accent:C.border}\`}}>
                       <div style={{fontSize:9,fontWeight:700,color:isToday?"#fff":C.muted,letterSpacing:.5,
                         textTransform:"uppercase",fontFamily:"monospace"}}>
                         {new Date(ev.start).toLocaleDateString("fr-FR",{weekday:"short"})}
@@ -646,7 +659,7 @@ export default function NotesFlow(){
         {tab==="synthese"&&(
           <div>
             {/* Période summary */}
-            <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,
+            <div style={{background:C.surface,border:\`1px solid \${C.border}\`,borderRadius:14,
               padding:"18px 20px",marginBottom:20}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
                 <div>
@@ -666,7 +679,7 @@ export default function NotesFlow(){
                     <span style={{fontSize:13,color:C.muted,flex:1}}>{c.label}</span>
                     <div style={{height:6,flex:2,background:C.border,borderRadius:4,overflow:"hidden"}}>
                       <div style={{height:"100%",background:C.accent,borderRadius:4,
-                        width:`${(chapterCounts[c.id]/periodNotes.length)*100}%`,transition:"width .4s"}}/>
+                        width:\`\${(chapterCounts[c.id]/periodNotes.length)*100}%\`,transition:"width .4s"}}/>
                     </div>
                     <span style={{fontSize:12,color:C.muted,minWidth:20,textAlign:"right"}}>{chapterCounts[c.id]}</span>
                   </div>
@@ -688,7 +701,7 @@ export default function NotesFlow(){
               const isCurrent=p.id===currentPeriod.id;
               return(
                 <div key={p.id} style={{background:isCurrent?C.accentLight:C.surface,
-                  border:`1.5px solid ${isCurrent?C.accentBorder:C.border}`,
+                  border:\`1.5px solid \${isCurrent?C.accentBorder:C.border}\`,
                   borderRadius:10,padding:"12px 16px",marginBottom:8,
                   display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
@@ -710,7 +723,7 @@ export default function NotesFlow(){
       {/* ── Capture Modal ── */}
       <Modal open={captureOpen} onClose={()=>setCaptureOpen(false)} title="📝 Nouvelle note">
         {/* Auto-assigned period badge */}
-        <div style={{background:C.accentLight,border:`1px solid ${C.accentBorder}`,borderRadius:8,
+        <div style={{background:C.accentLight,border:\`1px solid \${C.accentBorder}\`,borderRadius:8,
           padding:"8px 12px",marginBottom:16,fontSize:12,color:C.accent,fontWeight:600}}>
           ⚡ Rattachée automatiquement à : <strong>{currentPeriod.label}</strong> · compilation le {fmt(currentPeriod.end)}
         </div>
@@ -722,7 +735,7 @@ export default function NotesFlow(){
             {CHAPTERS.map(c=>(
               <button key={c.id} onClick={()=>setNoteChapter(c.id)} style={{
                 fontSize:12,fontWeight:600,padding:"6px 12px",borderRadius:20,
-                border:`1.5px solid ${noteChapter===c.id?C.accent:C.border}`,
+                border:\`1.5px solid \${noteChapter===c.id?C.accent:C.border}\`,
                 background:noteChapter===c.id?C.accent:C.bg,
                 color:noteChapter===c.id?"#fff":C.muted,
                 cursor:"pointer",fontFamily:"inherit",transition:"all .15s",
@@ -749,7 +762,7 @@ export default function NotesFlow(){
         <div style={{textAlign:"center",padding:"12px 0"}}>
           <div style={{width:72,height:72,borderRadius:"50%",margin:"0 auto 16px",
             background:voice.listening?C.redLight:C.bg,
-            border:`2px solid ${voice.listening?C.red:C.border}`,
+            border:\`2px solid \${voice.listening?C.red:C.border}\`,
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,
             transition:"all .3s",animation:voice.listening?"ripple 1.5s infinite":undefined}}>
             🎙
@@ -758,7 +771,7 @@ export default function NotesFlow(){
             {voice.listening?"Parle maintenant…":"Traitement en cours…"}
           </p>
           {voice.transcript&&(
-            <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:10,
+            <div style={{background:C.bg,border:\`1px solid \${C.border}\`,borderRadius:10,
               padding:"12px 16px",textAlign:"left",fontSize:14,lineHeight:1.65,marginBottom:16}}>
               {voice.transcript}
             </div>
@@ -777,21 +790,31 @@ export default function NotesFlow(){
 
       {/* ── Brainstorming Modal ── */}
       <Modal open={chatOpen} onClose={()=>setChatOpen(false)}
-        title={`💬 Brainstorming — ${currentPeriod.label}`} wide={true}>
+        title={\`💬 Brainstorming — \${currentPeriod.label}\`} wide={true}>
         <AIChat period={currentPeriod} notes={periodNotes}/>
       </Modal>
 
-      <style>{`
+      <style>{\`
         * { box-sizing: border-box; }
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(192,57,43,.3)} 70%{box-shadow:0 0 0 12px rgba(192,57,43,0)} 100%{box-shadow:0 0 0 0 rgba(192,57,43,0)} }
         ::-webkit-scrollbar{width:4px;height:4px}
         ::-webkit-scrollbar-track{background:transparent}
-        @import url('https://fonts.cdnfonts.com/css/phenomena');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap');
         ::-webkit-scrollbar-thumb{background:#d4c9b8;border-radius:4px}
-        textarea:focus, input:focus, select:focus { border-color: ${C.accent} !important; }
+        textarea:focus, input:focus, select:focus { border-color: \${C.accent} !important; }
         button:active { transform: scale(.97); }
-      `}</style>
+      \`}</style>
     </div>
   );
 }
+`;
+function copyCode(){
+  navigator.clipboard.writeText(CODE).then(()=>{
+    document.getElementById('status').textContent='✓ Copié ! Colle dans GitHub src/App.jsx';
+    document.querySelector('button').textContent='✓ Copié !';
+  });
+}
+</script>
+</body>
+</html>
