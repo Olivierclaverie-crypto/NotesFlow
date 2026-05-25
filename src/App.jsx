@@ -1,50 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8">
-<style>
-body{margin:0;padding:20px;font-family:sans-serif;background:#fdf8f0;}
-button{background:#2B5A9E;color:white;border:none;padding:14px 28px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;width:100%;}
-#status{margin-top:12px;font-size:14px;color:#2d7a4f;font-weight:600;text-align:center;}
-</style>
-</head>
-<body>
-<button onclick="copyCode()">📋 Copier le code NotesFlow</button>
-<div id="status"></div>
-<script>
-const CODE = `import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ── Design tokens — Home blue warm ───────────────────────────────────────────
 const C = {
-  bg:"#fdf8f0",        // fond sable très clair
-  surface:"#ffffff",   // surfaces blanches chaudes
-  card:"#fffcf7",      // cartes légèrement crème
-  border:"#e8d9c0",    // bordures caramel clair
+  bg:"#fdf8f0",
+  surface:"#ffffff",
+  card:"#fffcf7",
+  border:"#e8d9c0",
   borderDark:"#c9b48a",
-  accent:"#2B5A9E",    // bleu acier — accent principal
+  accent:"#2B5A9E",
   accentLight:"#eaf1fb",
   accentBorder:"#BAD6F0",
-  ink:"#0F1D2B",       // bleu nuit — texte principal
-  muted:"#5a6e7f",     // muted bleuté
-  subtle:"#8B5E20",    // caramel — éléments discrets
+  ink:"#0F1D2B",
+  muted:"#5a6e7f",
+  subtle:"#8B5E20",
   green:"#2d7a4f", greenLight:"#edf7f1",
   red:"#c0392b", redLight:"#fdf0ef",
   amber:"#8B5E20", amberLight:"#fdf3e3",
   blue:"#2B5A9E", blueLight:"#eaf1fb",
   gold:"#F5C97A", goldLight:"#fdf8ed",
+  purple:"#6B3FA0", purpleLight:"#f3edfb",
 };
 
 // ── Chapitres / Tags ──────────────────────────────────────────────────────────
 const CHAPTERS = [
-  { id:"marche",     emoji:"📊", label:"Marché" },
-  { id:"nouveautes", emoji:"🆕", label:"Nouveautés" },
-  { id:"logistique", emoji:"🚚", label:"Logistique" },
+  { id:"marche",      emoji:"📊", label:"Marché" },
+  { id:"nouveautes",  emoji:"🆕", label:"Nouveautés" },
+  { id:"logistique",  emoji:"🚚", label:"Logistique" },
   { id:"propositions",emoji:"💡", label:"Propositions" },
   { id:"performances",emoji:"🏆", label:"Performances" },
-  { id:"alertes",    emoji:"⚠️", label:"Alertes" },
-  { id:"reassorts",  emoji:"🔄", label:"Réassorts" },
-  { id:"operations", emoji:"🎯", label:"Opérations en cours" },
+  { id:"alertes",     emoji:"⚠️", label:"Alertes" },
+  { id:"reassorts",   emoji:"🔄", label:"Réassorts" },
+  { id:"operations",  emoji:"🎯", label:"Opérations en cours" },
   { id:"saisonnalite",emoji:"🎄", label:"Saisonnalité" },
-  { id:"dedicaces",  emoji:"✍️", label:"Demandes de dédicace" },
+  { id:"dedicaces",   emoji:"✍️", label:"Demandes de dédicace" },
+  { id:"compagnon",   emoji:"🛠", label:"Compagnon" },
+];
+
+// ── Sous-types pour le chapitre Compagnon ─────────────────────────────────────
+const COMPAGNON_TYPES = [
+  { id:"bug",         emoji:"🐛", label:"Bug",          color:"#c0392b", bg:"#fdf0ef" },
+  { id:"amelioration",emoji:"✨", label:"Amélioration",  color:"#2B5A9E", bg:"#eaf1fb" },
+  { id:"suggestion",  emoji:"💬", label:"Suggestion",    color:"#8B5E20", bg:"#fdf3e3" },
 ];
 
 // ── Périodes Synthèse ─────────────────────────────────────────────────────────
@@ -57,7 +53,6 @@ const SYNTHESE_PERIODS = [
   { id:"s6", start:"2026-11-02", end:"2026-12-07", label:"Synthèse Nov–Déc" },
 ];
 
-// ── Notes existantes importées depuis les événements Synthèse ────────────────
 const IMPORTED_NOTES = [
   { id:"imp1", text:"Attention offre stick", chapter:"alertes",     createdAt:"2026-05-22T08:00:00", imported:true },
   { id:"imp2", text:"Forte baisse en hyper Peppa — prudence sur navres PatPat (65% écoulement Osny à Noël)", chapter:"alertes", createdAt:"2026-05-22T08:01:00", imported:true },
@@ -71,7 +66,6 @@ const IMPORTED_NOTES = [
   { id:"imp10",text:"Bonnes performances des beaux livres voyages (VDM)", chapter:"performances", createdAt:"2026-05-22T08:09:00", imported:true },
 ];
 
-// ── RDV Client important ──────────────────────────────────────────────────────
 const CALENDAR_EVENTS = [
   { id:"e1",  title:"LA GRANDE LIBRAIRIE",       start:"2026-05-22T10:00:00", location:"Arras" },
   { id:"e2",  title:"FURET ARRAS",               start:"2026-05-22T11:00:00", location:"Arras" },
@@ -139,12 +133,13 @@ function getNextPeriod() {
 function urgencyStyle(days){
   if(days<0)  return {color:C.red,   bg:C.redLight,   label:"Dépassé"};
   if(days===0)return {color:C.red,   bg:C.redLight,   label:"Aujourd'hui"};
-  if(days<=3) return {color:C.amber, bg:C.amberLight, label:\`J-\${days}\`};
-  if(days<=10)return {color:C.accent,bg:C.accentLight,label:\`J-\${days}\`};
-  return             {color:C.green, bg:C.greenLight,  label:\`J-\${days}\`};
+  if(days<=3) return {color:C.amber, bg:C.amberLight, label:`J-${days}`};
+  if(days<=10)return {color:C.accent,bg:C.accentLight,label:`J-${days}`};
+  return             {color:C.green, bg:C.greenLight,  label:`J-${days}`};
 }
 
 function chapterById(id){ return CHAPTERS.find(c=>c.id===id)||CHAPTERS[0]; }
+function compagnonTypeById(id){ return COMPAGNON_TYPES.find(t=>t.id===id)||COMPAGNON_TYPES[0]; }
 
 // ── UI Components ─────────────────────────────────────────────────────────────
 function Tag({chapter, size="sm"}){
@@ -152,7 +147,7 @@ function Tag({chapter, size="sm"}){
   const fs = size==="sm"?11:13;
   return(
     <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:fs,fontWeight:600,
-      background:C.accentLight,color:C.accent,border:\`1px solid \${C.accentBorder}\`,
+      background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`,
       padding:"2px 8px",borderRadius:20,whiteSpace:"nowrap"}}>
       {ch.emoji} {ch.label}
     </span>
@@ -168,10 +163,11 @@ function Btn({onClick,children,variant="ghost",style={},disabled=false}){
     borderRadius:8,fontSize:13,fontWeight:600,padding:"8px 16px",transition:"all .15s",opacity:disabled?.5:1};
   const variants={
     ghost:{background:"transparent",color:C.muted},
-    primary:{background:C.accent,color:"#fff",boxShadow:\`0 2px 8px \${C.accent}44\`},
-    outline:{background:"transparent",color:C.accent,border:\`1.5px solid \${C.accent}\`},
-    soft:{background:C.accentLight,color:C.accent,border:\`1px solid \${C.accentBorder}\`},
-    danger:{background:C.redLight,color:C.red,border:\`1px solid \${C.red}44\`},
+    primary:{background:C.accent,color:"#fff",boxShadow:`0 2px 8px ${C.accent}44`},
+    outline:{background:"transparent",color:C.accent,border:`1.5px solid ${C.accent}`},
+    soft:{background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`},
+    danger:{background:C.redLight,color:C.red,border:`1px solid ${C.red}44`},
+    purple:{background:C.purpleLight,color:C.purple,border:`1px solid ${C.purple}44`},
   };
   return <button onClick={disabled?undefined:onClick} style={{...base,...variants[variant],...style}}>{children}</button>;
 }
@@ -182,7 +178,7 @@ function Modal({open,onClose,title,children,wide=false}){
     <div style={{position:"fixed",inset:0,background:"rgba(26,23,20,.55)",backdropFilter:"blur(4px)",
       zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}
       onClick={onClose}>
-      <div style={{background:C.surface,border:\`1px solid \${C.border}\`,borderRadius:20,padding:28,
+      <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:20,padding:28,
         width:"100%",maxWidth:wide?640:460,maxHeight:"88vh",overflowY:"auto",
         boxShadow:"0 24px 60px rgba(0,0,0,.18)"}}
         onClick={e=>e.stopPropagation()}>
@@ -201,7 +197,7 @@ function Modal({open,onClose,title,children,wide=false}){
 }
 
 const inputStyle = {
-  background:C.bg, border:\`1.5px solid \${C.border}\`, color:C.ink,
+  background:C.bg, border:`1.5px solid ${C.border}`, color:C.ink,
   padding:"10px 14px", borderRadius:10, fontSize:14, outline:"none",
   fontFamily:"inherit", width:"100%", boxSizing:"border-box",
   transition:"border-color .15s",
@@ -243,10 +239,7 @@ function AIChat({period,notes}){
       if(!byChapter[n.chapter]) byChapter[n.chapter]=[];
       byChapter[n.chapter].push(n.text);
     });
-    const notesText=CHAPTERS.filter(c=>byChapter[c.id]).map(c=>
-      \`### \${c.emoji} \${c.label}\\n\${byChapter[c.id].map(t=>\`- \${t}\`).join("\\n")}\`
-    ).join("\\n\\n");
-    const intro=\`Bonjour ! Je suis prêt pour le brainstorming de la **\${period.label}** (compilation le \${fmt(period.end)}).\\n\\nJ'ai \${notes.length} note(s) réparties en \${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :\`;
+    const intro=`Bonjour ! Je suis prêt pour le brainstorming de la **${period.label}** (compilation le ${fmt(period.end)}).\n\nJ'ai ${notes.length} note(s) réparties en ${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :`;
     setMessages([{role:"assistant",content:intro}]);
   },[]);
 
@@ -261,21 +254,21 @@ function AIChat({period,notes}){
     const byChapter={};
     notes.forEach(n=>{if(!byChapter[n.chapter])byChapter[n.chapter]=[];byChapter[n.chapter].push(n.text);});
     const notesText=CHAPTERS.filter(c=>byChapter[c.id]).map(c=>
-      \`### \${c.emoji} \${c.label}\\n\${byChapter[c.id].map(t=>\`- \${t}\`).join("\\n")}\`
-    ).join("\\n\\n");
+      `### ${c.emoji} ${c.label}\n${byChapter[c.id].map(t=>`- ${t}`).join("\n")}`
+    ).join("\n\n");
 
     try{
       const res=await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,
-          system:\`Tu es un assistant de terrain pour un commercial éditorial expérimenté. 
-Période : \${period.label} (du \${fmt(period.start)} au \${fmt(period.end)}).
-Notes terrain par chapitre :\\n\${notesText}
+          system:`Tu es un assistant de terrain pour un commercial éditorial expérimenté. 
+Période : ${period.label} (du ${fmt(period.start)} au ${fmt(period.end)}).
+Notes terrain par chapitre :\n${notesText}
 
 Aide à brainstormer et affiner le rapport. 
 Quand l'utilisateur demande le rapport final, génère un rapport professionnel structuré par chapitres (uniquement ceux qui ont des notes), avec pour chaque chapitre : synthèse des points clés, actions recommandées. 
 Termine par une section "Points prioritaires" avec les 3-5 actions urgentes.
-Ton : professionnel, concis, orienté action. En français.\`,
+Ton : professionnel, concis, orienté action. En français.`,
           messages:newMessages.map(m=>({role:m.role,content:m.content}))})});
       const data=await res.json();
       const reply=data.content?.map(b=>b.text||"").join("")||"Erreur.";
@@ -289,9 +282,7 @@ Ton : professionnel, concis, orienté action. En français.\`,
 
   return(
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      {/* Messages */}
-      <div style={{maxHeight:340,overflowY:"auto",display:"flex",flexDirection:"column",gap:10,
-        padding:"4px 0"}}>
+      <div style={{maxHeight:340,overflowY:"auto",display:"flex",flexDirection:"column",gap:10,padding:"4px 0"}}>
         {messages.map((m,i)=>(
           <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
             <div style={{maxWidth:"85%",padding:"10px 14px",borderRadius:14,fontSize:14,lineHeight:1.65,
@@ -299,7 +290,7 @@ Ton : professionnel, concis, orienté action. En français.\`,
               color:m.role==="user"?"#fff":C.ink,
               borderBottomRightRadius:m.role==="user"?3:14,
               borderBottomLeftRadius:m.role==="assistant"?3:14,
-              border:m.role==="assistant"?\`1px solid \${C.border}\`:"none",
+              border:m.role==="assistant"?`1px solid ${C.border}`:"none",
               whiteSpace:"pre-wrap"}}>
               {m.content}
             </div>
@@ -309,15 +300,13 @@ Ton : professionnel, concis, orienté action. En français.\`,
           <div style={{display:"flex",alignItems:"center",gap:8,color:C.muted,fontSize:13,padding:"4px 0"}}>
             <span style={{display:"flex",gap:4}}>
               {[0,1,2].map(i=><span key={i} style={{width:6,height:6,borderRadius:"50%",background:C.subtle,
-                animation:\`bounce 1s \${i*.2}s infinite\`}}/>)}
+                animation:`bounce 1s ${i*.2}s infinite`}}/>)}
             </span>
             Claude rédige…
           </div>
         )}
         <div ref={bottomRef}/>
       </div>
-
-      {/* Input */}
       <div style={{display:"flex",gap:8}}>
         <input value={input} onChange={e=>setInput(e.target.value)}
           onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
@@ -325,24 +314,179 @@ Ton : professionnel, concis, orienté action. En français.\`,
           style={{...inputStyle,flex:1,fontSize:13}}/>
         <Btn onClick={send} variant="primary" disabled={loading} style={{padding:"10px 14px"}}>→</Btn>
       </div>
-
-      {/* Rapport exportable */}
       {report&&(
-        <div style={{background:C.greenLight,border:\`1.5px solid \${C.green}44\`,borderRadius:12,padding:14,marginTop:4}}>
+        <div style={{background:C.greenLight,border:`1.5px solid ${C.green}44`,borderRadius:12,padding:14,marginTop:4}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Rapport prêt à l'export</span>
             <div style={{display:"flex",gap:8}}>
               <Btn onClick={()=>navigator.clipboard.writeText(report)} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📋 Copier</Btn>
               <Btn onClick={()=>{
-                const sub=encodeURIComponent(\`\${period.label} — Synthèse terrain\`);
+                const sub=encodeURIComponent(`${period.label} — Synthèse terrain`);
                 const body=encodeURIComponent(report);
-                window.location.href=\`mailto:?subject=\${sub}&body=\${body}\`;
+                window.location.href=`mailto:?subject=${sub}&body=${body}`;
               }} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📧 Envoyer</Btn>
             </div>
           </div>
           <div style={{fontSize:12,color:C.green}}>Le rapport sera structuré par chapitres selon vos notes terrain.</div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Compagnon Tab ─────────────────────────────────────────────────────────────
+function CompagnonTab({reports,onAdd,onDelete}){
+  const [formOpen,setFormOpen]=useState(false);
+  const [typeFilter,setTypeFilter]=useState("all");
+  const [text,setText]=useState("");
+  const [type,setType]=useState("bug");
+  const [context,setContext]=useState("");
+
+  function submit(){
+    if(!text.trim()) return;
+    onAdd({text:text.trim(),type,context:context.trim()});
+    setText(""); setContext(""); setType("bug"); setFormOpen(false);
+  }
+
+  const filtered=typeFilter==="all"?reports:reports.filter(r=>r.type===typeFilter);
+  const counts={};
+  reports.forEach(r=>{counts[r.type]=(counts[r.type]||0)+1;});
+
+  return(
+    <div>
+      {/* Header banner */}
+      <div style={{background:C.purpleLight,border:`1.5px solid ${C.purple}33`,borderRadius:12,
+        padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div>
+          <div style={{fontWeight:700,color:C.purple,fontSize:14,marginBottom:2}}>🛠 Compagnon — Suivi appli pro</div>
+          <div style={{fontSize:12,color:C.muted}}>{reports.length} signalement{reports.length!==1?"s":""} · bugs, améliorations, suggestions</div>
+        </div>
+        <Btn onClick={()=>setFormOpen(true)} variant="purple" style={{fontSize:12,padding:"7px 14px"}}>+ Signaler</Btn>
+      </div>
+
+      {/* Type filter */}
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
+        <button onClick={()=>setTypeFilter("all")} style={{
+          fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"inherit",
+          background:typeFilter==="all"?C.purple:C.bg,
+          color:typeFilter==="all"?"#fff":C.muted,
+          border:`1px solid ${typeFilter==="all"?C.purple:C.border}`}}>
+          Tous ({reports.length})
+        </button>
+        {COMPAGNON_TYPES.map(t=>(
+          <button key={t.id} onClick={()=>setTypeFilter(t.id)} style={{
+            fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"inherit",
+            background:typeFilter===t.id?t.color:C.bg,
+            color:typeFilter===t.id?"#fff":C.muted,
+            border:`1px solid ${typeFilter===t.id?t.color:C.border}`}}>
+            {t.emoji} {t.label} {counts[t.id]?`(${counts[t.id]})`:""}</button>
+        ))}
+      </div>
+
+      {/* List */}
+      {filtered.length===0
+        ? <div style={{textAlign:"center",color:C.subtle,padding:"50px 0",fontSize:14}}>
+            Aucun signalement.<br/>
+            <span style={{fontSize:12}}>Clique sur "+ Signaler" pour en ajouter un.</span>
+          </div>
+        : <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {filtered.map(r=>{
+              const t=compagnonTypeById(r.type);
+              return(
+                <div key={r.id} style={{background:C.surface,borderRadius:12,padding:"14px 16px",
+                  border:`1.5px solid ${C.border}`,display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <span style={{fontSize:20,lineHeight:1,paddingTop:2}}>{t.emoji}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                      <span style={{fontSize:11,fontWeight:700,color:t.color,background:t.bg,
+                        padding:"2px 8px",borderRadius:20}}>{t.label}</span>
+                      <span style={{fontSize:11,color:C.subtle,fontFamily:"monospace"}}>
+                        {new Date(r.createdAt).toLocaleDateString("fr-FR")}
+                      </span>
+                    </div>
+                    <p style={{margin:"0 0 6px",fontSize:14,lineHeight:1.65,color:C.ink,fontWeight:600}}>{r.text}</p>
+                    {r.context&&(
+                      <p style={{margin:0,fontSize:13,lineHeight:1.55,color:C.muted}}>{r.context}</p>
+                    )}
+                  </div>
+                  <button onClick={()=>onDelete(r.id)}
+                    style={{background:"none",border:"none",color:C.subtle,cursor:"pointer",
+                      fontSize:16,padding:4,borderRadius:6,lineHeight:1,flexShrink:0,transition:"color .15s"}}
+                    onMouseOver={e=>e.currentTarget.style.color=C.red}
+                    onMouseOut={e=>e.currentTarget.style.color=C.subtle}>✕</button>
+                </div>
+              );
+            })}
+          </div>
+      }
+
+      {/* Export button */}
+      {reports.length>0&&(
+        <div style={{marginTop:16,display:"flex",gap:8}}>
+          <Btn onClick={()=>{
+            const lines=reports.map(r=>{
+              const t=compagnonTypeById(r.type);
+              return `[${t.label.toUpperCase()}] ${r.text}${r.context?"\n  Contexte : "+r.context:""}`;
+            }).join("\n\n");
+            const full=`COMPAGNON — Signalements appli pro\n${new Date().toLocaleDateString("fr-FR")}\n\n${lines}`;
+            navigator.clipboard.writeText(full);
+          }} variant="outline" style={{fontSize:12,padding:"6px 14px"}}>📋 Copier tout</Btn>
+          <Btn onClick={()=>{
+            const lines=reports.map(r=>{
+              const t=compagnonTypeById(r.type);
+              return `[${t.label.toUpperCase()}] ${r.text}${r.context?"\nContexte : "+r.context:""}`;
+            }).join("\n\n");
+            const full=`COMPAGNON — Signalements appli pro\n${new Date().toLocaleDateString("fr-FR")}\n\n${lines}`;
+            const sub=encodeURIComponent("Compagnon — Signalements appli pro");
+            window.location.href=`mailto:?subject=${sub}&body=${encodeURIComponent(full)}`;
+          }} variant="outline" style={{fontSize:12,padding:"6px 14px"}}>📧 Envoyer par mail</Btn>
+        </div>
+      )}
+
+      {/* Form modal */}
+      <Modal open={formOpen} onClose={()=>setFormOpen(false)} title="🛠 Nouveau signalement Compagnon">
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {/* Type selector */}
+          <div>
+            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:8,fontWeight:600}}>Type</label>
+            <div style={{display:"flex",gap:8}}>
+              {COMPAGNON_TYPES.map(t=>(
+                <button key={t.id} onClick={()=>setType(t.id)} style={{
+                  flex:1,padding:"10px 8px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",
+                  border:`1.5px solid ${type===t.id?t.color:C.border}`,
+                  background:type===t.id?t.bg:"transparent",
+                  color:type===t.id?t.color:C.muted,
+                  fontSize:12,fontWeight:700,transition:"all .15s",textAlign:"center"}}>
+                  <div style={{fontSize:18,marginBottom:4}}>{t.emoji}</div>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Description */}
+          <div>
+            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>
+              Description {type==="bug"?"du bug":"de l'amélioration / suggestion"}
+            </label>
+            <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} autoFocus
+              placeholder={type==="bug"?"Ex : L'export PDF plante quand le titre contient des accents…":"Ex : Ajouter un filtre par éditeur dans la liste articles…"}
+              style={{...inputStyle,resize:"none",lineHeight:1.6}}/>
+          </div>
+          {/* Contexte */}
+          <div>
+            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>
+              Contexte / Étapes pour reproduire <span style={{fontWeight:400}}>(optionnel)</span>
+            </label>
+            <textarea value={context} onChange={e=>setContext(e.target.value)} rows={2}
+              placeholder="Ex : Visible sur iPhone 14, en visite chez EYROLLES…"
+              style={{...inputStyle,resize:"none",lineHeight:1.6}}/>
+          </div>
+          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+            <Btn onClick={()=>setFormOpen(false)}>Annuler</Btn>
+            <Btn onClick={submit} variant="primary" disabled={!text.trim()}>Enregistrer</Btn>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -355,6 +499,7 @@ export default function NotesFlow(){
     if(saved.length===0) return IMPORTED_NOTES;
     return saved;
   });
+  const [compagnonReports,setCompagnonReports]=useState(()=>load("nf3_compagnon",[]));
 
   const [captureOpen,setCaptureOpen]=useState(false);
   const [voiceOpen,setVoiceOpen]=useState(false);
@@ -362,7 +507,7 @@ export default function NotesFlow(){
   const [filterChapter,setFilterChapter]=useState("all");
   const [selectMode,setSelectMode]=useState(false);
   const [selected,setSelected]=useState(new Set());
-  const [confirmDelete,setConfirmDelete]=useState(null); // null | "single" | "multi"
+  const [confirmDelete,setConfirmDelete]=useState(null);
   const [pendingDeleteId,setPendingDeleteId]=useState(null);
 
   const [noteText,setNoteText]=useState("");
@@ -374,8 +519,8 @@ export default function NotesFlow(){
   const urg=urgencyStyle(daysToCompile);
 
   useEffect(()=>save("nf3_notes",notes),[notes]);
+  useEffect(()=>save("nf3_compagnon",compagnonReports),[compagnonReports]);
 
-  // Keyboard shortcut
   useEffect(()=>{
     const h=e=>{if(e.ctrlKey&&e.key===" "){e.preventDefault();setCaptureOpen(true);}};
     window.addEventListener("keydown",h);
@@ -394,7 +539,17 @@ export default function NotesFlow(){
     setNoteText(""); setCaptureOpen(false);
   }
 
-  const periodNotes=notes.filter(n=>n.period===currentPeriod.id||n.imported);
+  function addCompagnonReport({text,type,context}){
+    const r={id:Date.now(),text,type,context,createdAt:new Date().toISOString()};
+    setCompagnonReports(prev=>[r,...prev]);
+  }
+
+  function deleteCompagnonReport(id){
+    setCompagnonReports(prev=>prev.filter(r=>r.id!==id));
+  }
+
+  // Notes filtrées (on exclut compagnon de la liste normale)
+  const periodNotes=notes.filter(n=>(n.period===currentPeriod.id||n.imported)&&n.chapter!=="compagnon");
   const filteredNotes=filterChapter==="all"?periodNotes:periodNotes.filter(n=>n.chapter===filterChapter);
 
   const chapterCounts={};
@@ -403,18 +558,17 @@ export default function NotesFlow(){
   const upcomingEvents=CALENDAR_EVENTS.filter(e=>new Date(e.start)>=new Date()).slice(0,15);
 
   const tabs=[
-    {key:"notes",   icon:"📝", label:"Notes"},
-    {key:"planning",icon:"🗓", label:"Planning"},
-    {key:"synthese",icon:"⚡", label:"Synthèse"},
+    {key:"notes",     icon:"📝", label:"Notes"},
+    {key:"planning",  icon:"🗓", label:"Planning"},
+    {key:"synthese",  icon:"⚡", label:"Synthèse"},
+    {key:"compagnon", icon:"🛠", label:"Compagnon", badge:compagnonReports.length||null},
   ];
 
   return(
-    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Nunito', sans-serif",
-      position:"relative"}}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.ink,fontFamily:"'Nunito', sans-serif",position:"relative"}}>
 
       {/* ── Header ── */}
-      <div style={{background:C.surface,borderBottom:\`1px solid \${C.border}\`,position:"sticky",top:0,zIndex:100}}>
-        {/* Top bar */}
+      <div style={{background:C.surface,borderBottom:`1px solid ${C.border}`,position:"sticky",top:0,zIndex:100}}>
         <div style={{padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div>
             <div style={{display:"flex",alignItems:"baseline",gap:10}}>
@@ -423,7 +577,6 @@ export default function NotesFlow(){
                 {periodNotes.filter(n=>!n.imported).length} note{periodNotes.filter(n=>!n.imported).length!==1?"s":""} · {currentPeriod.label}
               </span>
             </div>
-            {/* Compilation countdown */}
             <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:urg.color}}/>
               <span style={{fontSize:11,color:urg.color,fontWeight:600}}>
@@ -431,11 +584,10 @@ export default function NotesFlow(){
               </span>
             </div>
           </div>
-          {/* Action buttons */}
           <div style={{display:"flex",gap:8}}>
             <button onClick={()=>{setVoiceOpen(true);voice.start();}}
               title="Dicter une note"
-              style={{width:38,height:38,borderRadius:10,background:C.bg,border:\`1.5px solid \${C.border}\`,
+              style={{width:38,height:38,borderRadius:10,background:C.bg,border:`1.5px solid ${C.border}`,
                 color:voice.listening?C.red:C.muted,fontSize:17,cursor:"pointer",
                 display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
               🎙
@@ -445,22 +597,26 @@ export default function NotesFlow(){
               style={{height:38,padding:"0 16px",borderRadius:10,background:C.accent,border:"none",
                 color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",
                 display:"flex",alignItems:"center",gap:6,
-                boxShadow:\`0 2px 12px \${C.accent}55\`,fontFamily:"inherit"}}>
+                boxShadow:`0 2px 12px ${C.accent}55`,fontFamily:"inherit"}}>
               + Note
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div style={{display:"flex",paddingLeft:20,borderTop:\`1px solid \${C.border}\`}}>
-          {tabs.map(({key,icon,label})=>(
+        <div style={{display:"flex",paddingLeft:20,borderTop:`1px solid ${C.border}`}}>
+          {tabs.map(({key,icon,label,badge})=>(
             <button key={key} onClick={()=>setTab(key)} style={{
-              padding:"10px 16px",border:"none",background:"transparent",cursor:"pointer",
+              padding:"10px 14px",border:"none",background:"transparent",cursor:"pointer",
               fontFamily:"inherit",fontSize:13,fontWeight:tab===key?700:400,
-              color:tab===key?C.accent:C.muted,
-              borderBottom:tab===key?\`2px solid \${C.accent}\`:"2px solid transparent",
-              transition:"all .15s",display:"flex",alignItems:"center",gap:5,
-            }}>{icon} {label}</button>
+              color:tab===key?(key==="compagnon"?C.purple:C.accent):C.muted,
+              borderBottom:tab===key?`2px solid ${key==="compagnon"?C.purple:C.accent}`:"2px solid transparent",
+              transition:"all .15s",display:"flex",alignItems:"center",gap:5,position:"relative",
+            }}>
+              {icon} {label}
+              {badge&&<span style={{fontSize:10,fontWeight:700,background:C.purple,color:"#fff",
+                borderRadius:10,padding:"1px 5px",marginLeft:2}}>{badge}</span>}
+            </button>
           ))}
         </div>
       </div>
@@ -471,25 +627,23 @@ export default function NotesFlow(){
         {/* NOTES TAB */}
         {tab==="notes"&&(
           <div>
-            {/* Chapter filter pills */}
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
               <button onClick={()=>setFilterChapter("all")} style={{
                 fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
                 background:filterChapter==="all"?C.accent:C.bg,
                 color:filterChapter==="all"?"#fff":C.muted,
-                border:\`1px solid \${filterChapter==="all"?C.accent:C.border}\`,fontFamily:"inherit",
+                border:`1px solid ${filterChapter==="all"?C.accent:C.border}`,fontFamily:"inherit",
               }}>Tous ({periodNotes.length})</button>
-              {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
+              {CHAPTERS.filter(c=>c.id!=="compagnon"&&chapterCounts[c.id]).map(c=>(
                 <button key={c.id} onClick={()=>setFilterChapter(c.id)} style={{
                   fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
                   background:filterChapter===c.id?C.accent:C.bg,
                   color:filterChapter===c.id?"#fff":C.muted,
-                  border:\`1px solid \${filterChapter===c.id?C.accent:C.border}\`,fontFamily:"inherit",
-                }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?\`(\${chapterCounts[c.id]})\`:""}</button>
+                  border:`1px solid ${filterChapter===c.id?C.accent:C.border}`,fontFamily:"inherit",
+                }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?`(${chapterCounts[c.id]})`:""}</button>
               ))}
             </div>
 
-            {/* Selection toolbar */}
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <Btn onClick={()=>{setSelectMode(s=>!s);setSelected(new Set());}}
                 variant={selectMode?"soft":"ghost"}
@@ -530,14 +684,13 @@ export default function NotesFlow(){
                           });
                         }}
                         style={{background:isSel?C.accentLight:C.surface,borderRadius:12,padding:"14px 16px",
-                          border:\`1.5px solid \${isSel?C.accent:C.border}\`,
+                          border:`1.5px solid ${isSel?C.accent:C.border}`,
                           display:"flex",gap:12,alignItems:"flex-start",
                           transition:"all .15s",cursor:selectMode?"pointer":"default",
                           opacity:note.imported?.85:1}}>
-                        {/* Checkbox or emoji */}
                         {selectMode
                           ? <div style={{width:22,height:22,borderRadius:6,flexShrink:0,marginTop:1,
-                              border:\`2px solid \${isSel?C.accent:C.border}\`,
+                              border:`2px solid ${isSel?C.accent:C.border}`,
                               background:isSel?C.accent:"transparent",
                               display:"flex",alignItems:"center",justifyContent:"center",
                               color:"#fff",fontSize:13,fontWeight:700}}>
@@ -574,14 +727,13 @@ export default function NotesFlow(){
           </div>
         )}
 
-        {/* ── Confirm delete modal ── */}
         {confirmDelete&&(
           <Modal open={true} onClose={()=>{setConfirmDelete(null);setPendingDeleteId(null);}}
             title="🗑 Confirmer la suppression">
             <p style={{fontSize:14,color:C.muted,lineHeight:1.6,marginBottom:20}}>
               {confirmDelete==="single"
                 ? "Supprimer cette note définitivement ?"
-                : \`Supprimer les \${selected.size} notes sélectionnées définitivement ?\`}
+                : `Supprimer les ${selected.size} notes sélectionnées définitivement ?`}
               <br/><span style={{fontSize:12,color:C.subtle}}>Cette action est irréversible.</span>
             </p>
             <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
@@ -591,11 +743,9 @@ export default function NotesFlow(){
                   setNotes(p=>p.filter(n=>n.id!==pendingDeleteId));
                 } else {
                   setNotes(p=>p.filter(n=>!selected.has(n.id)));
-                  setSelected(new Set());
-                  setSelectMode(false);
+                  setSelected(new Set()); setSelectMode(false);
                 }
-                setConfirmDelete(null);
-                setPendingDeleteId(null);
+                setConfirmDelete(null); setPendingDeleteId(null);
               }}>Supprimer</Btn>
             </div>
           </Modal>
@@ -607,9 +757,7 @@ export default function NotesFlow(){
             <div style={{fontSize:12,color:C.muted,marginBottom:14,fontFamily:"monospace"}}>
               Calendrier Client important · {upcomingEvents.length} prochains RDV
             </div>
-
-            {/* Période en cours */}
-            <div style={{background:C.accentLight,border:\`1.5px solid \${C.accentBorder}\`,
+            <div style={{background:C.accentLight,border:`1.5px solid ${C.accentBorder}`,
               borderRadius:12,padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
                 <div style={{fontWeight:700,color:C.accent,fontSize:14}}>⚡ {currentPeriod.label}</div>
@@ -619,7 +767,6 @@ export default function NotesFlow(){
               </div>
               <Pill color={urg.color} bg={urg.bg}>{urg.label}</Pill>
             </div>
-
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {upcomingEvents.map(ev=>{
                 const days=daysLeft(ev.start);
@@ -627,11 +774,10 @@ export default function NotesFlow(){
                 const isToday=days===0;
                 return(
                   <div key={ev.id} style={{background:C.surface,borderRadius:10,padding:"12px 16px",
-                    border:\`1.5px solid \${isToday?C.accent:C.border}\`,
+                    border:`1.5px solid ${isToday?C.accent:C.border}`,
                     display:"flex",gap:14,alignItems:"center"}}>
-                    {/* Date block */}
                     <div style={{minWidth:40,textAlign:"center",background:isToday?C.accent:C.bg,
-                      borderRadius:8,padding:"6px 4px",border:\`1px solid \${isToday?C.accent:C.border}\`}}>
+                      borderRadius:8,padding:"6px 4px",border:`1px solid ${isToday?C.accent:C.border}`}}>
                       <div style={{fontSize:9,fontWeight:700,color:isToday?"#fff":C.muted,letterSpacing:.5,
                         textTransform:"uppercase",fontFamily:"monospace"}}>
                         {new Date(ev.start).toLocaleDateString("fr-FR",{weekday:"short"})}
@@ -658,8 +804,7 @@ export default function NotesFlow(){
         {/* SYNTHESE TAB */}
         {tab==="synthese"&&(
           <div>
-            {/* Période summary */}
-            <div style={{background:C.surface,border:\`1px solid \${C.border}\`,borderRadius:14,
+            <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,
               padding:"18px 20px",marginBottom:20}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
                 <div>
@@ -670,28 +815,23 @@ export default function NotesFlow(){
                 </div>
                 <Pill color={urg.color} bg={urg.bg}>{urg.label}</Pill>
               </div>
-
-              {/* Chapters breakdown */}
               <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}>
-                {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
+                {CHAPTERS.filter(c=>c.id!=="compagnon"&&chapterCounts[c.id]).map(c=>(
                   <div key={c.id} style={{display:"flex",alignItems:"center",gap:10}}>
                     <span style={{fontSize:14}}>{c.emoji}</span>
                     <span style={{fontSize:13,color:C.muted,flex:1}}>{c.label}</span>
                     <div style={{height:6,flex:2,background:C.border,borderRadius:4,overflow:"hidden"}}>
                       <div style={{height:"100%",background:C.accent,borderRadius:4,
-                        width:\`\${(chapterCounts[c.id]/periodNotes.length)*100}%\`,transition:"width .4s"}}/>
+                        width:`${(chapterCounts[c.id]/periodNotes.length)*100}%`,transition:"width .4s"}}/>
                     </div>
                     <span style={{fontSize:12,color:C.muted,minWidth:20,textAlign:"right"}}>{chapterCounts[c.id]}</span>
                   </div>
                 ))}
               </div>
-
               <Btn onClick={()=>setChatOpen(true)} variant="primary" style={{width:"100%",justifyContent:"center",display:"flex"}}>
                 💬 Lancer le brainstorming & générer le rapport
               </Btn>
             </div>
-
-            {/* Toutes les périodes */}
             <div style={{fontSize:12,color:C.muted,marginBottom:10,fontWeight:600,letterSpacing:.5,textTransform:"uppercase"}}>
               Calendrier des synthèses
             </div>
@@ -701,7 +841,7 @@ export default function NotesFlow(){
               const isCurrent=p.id===currentPeriod.id;
               return(
                 <div key={p.id} style={{background:isCurrent?C.accentLight:C.surface,
-                  border:\`1.5px solid \${isCurrent?C.accentBorder:C.border}\`,
+                  border:`1.5px solid ${isCurrent?C.accentBorder:C.border}`,
                   borderRadius:10,padding:"12px 16px",marginBottom:8,
                   display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
@@ -718,24 +858,30 @@ export default function NotesFlow(){
             })}
           </div>
         )}
+
+        {/* COMPAGNON TAB */}
+        {tab==="compagnon"&&(
+          <CompagnonTab
+            reports={compagnonReports}
+            onAdd={addCompagnonReport}
+            onDelete={deleteCompagnonReport}
+          />
+        )}
       </div>
 
       {/* ── Capture Modal ── */}
       <Modal open={captureOpen} onClose={()=>setCaptureOpen(false)} title="📝 Nouvelle note">
-        {/* Auto-assigned period badge */}
-        <div style={{background:C.accentLight,border:\`1px solid \${C.accentBorder}\`,borderRadius:8,
+        <div style={{background:C.accentLight,border:`1px solid ${C.accentBorder}`,borderRadius:8,
           padding:"8px 12px",marginBottom:16,fontSize:12,color:C.accent,fontWeight:600}}>
           ⚡ Rattachée automatiquement à : <strong>{currentPeriod.label}</strong> · compilation le {fmt(currentPeriod.end)}
         </div>
-
-        {/* Chapter selector */}
         <div style={{marginBottom:12}}>
           <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>Chapitre</label>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {CHAPTERS.map(c=>(
+            {CHAPTERS.filter(c=>c.id!=="compagnon").map(c=>(
               <button key={c.id} onClick={()=>setNoteChapter(c.id)} style={{
                 fontSize:12,fontWeight:600,padding:"6px 12px",borderRadius:20,
-                border:\`1.5px solid \${noteChapter===c.id?C.accent:C.border}\`,
+                border:`1.5px solid ${noteChapter===c.id?C.accent:C.border}`,
                 background:noteChapter===c.id?C.accent:C.bg,
                 color:noteChapter===c.id?"#fff":C.muted,
                 cursor:"pointer",fontFamily:"inherit",transition:"all .15s",
@@ -743,14 +889,10 @@ export default function NotesFlow(){
             ))}
           </div>
         </div>
-
-        {/* Text input */}
         <textarea value={noteText} onChange={e=>setNoteText(e.target.value)} rows={4}
-          placeholder="Ta note terrain…"
-          autoFocus
+          placeholder="Ta note terrain…" autoFocus
           onKeyDown={e=>{if(e.metaKey&&e.key==="Enter")addNote();}}
           style={{...inputStyle,resize:"vertical",marginBottom:16,lineHeight:1.6}}/>
-
         <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
           <Btn onClick={()=>setCaptureOpen(false)}>Annuler</Btn>
           <Btn onClick={addNote} variant="primary">Enregistrer ⌘↵</Btn>
@@ -762,7 +904,7 @@ export default function NotesFlow(){
         <div style={{textAlign:"center",padding:"12px 0"}}>
           <div style={{width:72,height:72,borderRadius:"50%",margin:"0 auto 16px",
             background:voice.listening?C.redLight:C.bg,
-            border:\`2px solid \${voice.listening?C.red:C.border}\`,
+            border:`2px solid ${voice.listening?C.red:C.border}`,
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,
             transition:"all .3s",animation:voice.listening?"ripple 1.5s infinite":undefined}}>
             🎙
@@ -771,7 +913,7 @@ export default function NotesFlow(){
             {voice.listening?"Parle maintenant…":"Traitement en cours…"}
           </p>
           {voice.transcript&&(
-            <div style={{background:C.bg,border:\`1px solid \${C.border}\`,borderRadius:10,
+            <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:10,
               padding:"12px 16px",textAlign:"left",fontSize:14,lineHeight:1.65,marginBottom:16}}>
               {voice.transcript}
             </div>
@@ -790,11 +932,11 @@ export default function NotesFlow(){
 
       {/* ── Brainstorming Modal ── */}
       <Modal open={chatOpen} onClose={()=>setChatOpen(false)}
-        title={\`💬 Brainstorming — \${currentPeriod.label}\`} wide={true}>
+        title={`💬 Brainstorming — ${currentPeriod.label}`} wide={true}>
         <AIChat period={currentPeriod} notes={periodNotes}/>
       </Modal>
 
-      <style>{\`
+      <style>{`
         * { box-sizing: border-box; }
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(192,57,43,.3)} 70%{box-shadow:0 0 0 12px rgba(192,57,43,0)} 100%{box-shadow:0 0 0 0 rgba(192,57,43,0)} }
@@ -802,19 +944,9 @@ export default function NotesFlow(){
         ::-webkit-scrollbar-track{background:transparent}
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap');
         ::-webkit-scrollbar-thumb{background:#d4c9b8;border-radius:4px}
-        textarea:focus, input:focus, select:focus { border-color: \${C.accent} !important; }
+        textarea:focus, input:focus, select:focus { border-color: #2B5A9E !important; }
         button:active { transform: scale(.97); }
-      \`}</style>
+      `}</style>
     </div>
   );
 }
-`;
-function copyCode(){
-  navigator.clipboard.writeText(CODE).then(()=>{
-    document.getElementById('status').textContent='✓ Copié ! Colle dans GitHub src/App.jsx';
-    document.querySelector('button').textContent='✓ Copié !';
-  });
-}
-</script>
-</body>
-</html>
