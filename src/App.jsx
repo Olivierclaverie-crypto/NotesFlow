@@ -1,46 +1,31 @@
 import { useState, useEffect, useRef } from "react";
 
-// ── Design tokens — Home blue warm ───────────────────────────────────────────
+// ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  bg:"#fdf8f0",
-  surface:"#ffffff",
-  card:"#fffcf7",
-  border:"#e8d9c0",
-  borderDark:"#c9b48a",
-  accent:"#2B5A9E",
-  accentLight:"#eaf1fb",
-  accentBorder:"#BAD6F0",
-  ink:"#0F1D2B",
-  muted:"#5a6e7f",
-  subtle:"#8B5E20",
+  bg:"#fdf8f0", surface:"#ffffff", card:"#fffcf7",
+  border:"#e8d9c0", borderDark:"#c9b48a",
+  accent:"#2B5A9E", accentLight:"#eaf1fb", accentBorder:"#BAD6F0",
+  ink:"#0F1D2B", muted:"#5a6e7f", subtle:"#8B5E20",
   green:"#2d7a4f", greenLight:"#edf7f1",
   red:"#c0392b", redLight:"#fdf0ef",
   amber:"#8B5E20", amberLight:"#fdf3e3",
-  blue:"#2B5A9E", blueLight:"#eaf1fb",
   gold:"#F5C97A", goldLight:"#fdf8ed",
   purple:"#6B3FA0", purpleLight:"#f3edfb",
 };
 
-// ── Chapitres / Tags ──────────────────────────────────────────────────────────
+// ── Chapitres — Compagnon est un chapitre comme les autres ────────────────────
 const CHAPTERS = [
-  { id:"marche",      emoji:"📊", label:"Marché" },
-  { id:"nouveautes",  emoji:"🆕", label:"Nouveautés" },
-  { id:"logistique",  emoji:"🚚", label:"Logistique" },
-  { id:"propositions",emoji:"💡", label:"Propositions" },
-  { id:"performances",emoji:"🏆", label:"Performances" },
-  { id:"alertes",     emoji:"⚠️", label:"Alertes" },
-  { id:"reassorts",   emoji:"🔄", label:"Réassorts" },
-  { id:"operations",  emoji:"🎯", label:"Opérations en cours" },
-  { id:"saisonnalite",emoji:"🎄", label:"Saisonnalité" },
-  { id:"dedicaces",   emoji:"✍️", label:"Demandes de dédicace" },
-  { id:"compagnon",   emoji:"🛠", label:"Compagnon" },
-];
-
-// ── Sous-types pour le chapitre Compagnon ─────────────────────────────────────
-const COMPAGNON_TYPES = [
-  { id:"bug",         emoji:"🐛", label:"Bug",          color:"#c0392b", bg:"#fdf0ef" },
-  { id:"amelioration",emoji:"✨", label:"Amélioration",  color:"#2B5A9E", bg:"#eaf1fb" },
-  { id:"suggestion",  emoji:"💬", label:"Suggestion",    color:"#8B5E20", bg:"#fdf3e3" },
+  { id:"marche",       emoji:"📊", label:"Marché" },
+  { id:"nouveautes",   emoji:"🆕", label:"Nouveautés" },
+  { id:"logistique",   emoji:"🚚", label:"Logistique" },
+  { id:"propositions", emoji:"💡", label:"Propositions" },
+  { id:"performances", emoji:"🏆", label:"Performances" },
+  { id:"alertes",      emoji:"⚠️", label:"Alertes" },
+  { id:"reassorts",    emoji:"🔄", label:"Réassorts" },
+  { id:"operations",   emoji:"🎯", label:"Opérations en cours" },
+  { id:"saisonnalite", emoji:"🎄", label:"Saisonnalité" },
+  { id:"dedicaces",    emoji:"✍️", label:"Demandes de dédicace" },
+  { id:"compagnon",    emoji:"🛠", label:"Compagnon" },
 ];
 
 // ── Périodes Synthèse ─────────────────────────────────────────────────────────
@@ -54,16 +39,16 @@ const SYNTHESE_PERIODS = [
 ];
 
 const IMPORTED_NOTES = [
-  { id:"imp1", text:"Attention offre stick", chapter:"alertes",     createdAt:"2026-05-22T08:00:00", imported:true },
-  { id:"imp2", text:"Forte baisse en hyper Peppa — prudence sur navres PatPat (65% écoulement Osny à Noël)", chapter:"alertes", createdAt:"2026-05-22T08:01:00", imported:true },
-  { id:"imp3", text:"Possibilité d'extraire fiches articles Compagnon en JPEG/PNG pour corps de mail", chapter:"propositions", createdAt:"2026-05-22T08:02:00", imported:true },
-  { id:"imp4", text:"Dans les e-mails : alerter François avec EAN plutôt que nuart", chapter:"logistique", createdAt:"2026-05-22T08:03:00", imported:true },
-  { id:"imp5", text:"CGT adresse Fosses à vérifier", chapter:"logistique", createdAt:"2026-05-22T08:04:00", imported:true },
-  { id:"imp6", text:"Encore des soucis de livraison à Chambly", chapter:"logistique", createdAt:"2026-05-22T08:05:00", imported:true },
-  { id:"imp7", text:"Couverture France en train — à surveiller", chapter:"marche", createdAt:"2026-05-22T08:06:00", imported:true },
-  { id:"imp8", text:"Avoir dates de dispo Compagnon des BdC : coffrets sept, coffrets T4, Enjeux Jeun & Adultes, Noël, campagnes de réassort", chapter:"nouveautes", createdAt:"2026-05-22T08:07:00", imported:true },
-  { id:"imp9", text:"Création mobilier permanent assortiment coffrets (loisirs créa Eyrolles)", chapter:"operations", createdAt:"2026-05-22T08:08:00", imported:true },
-  { id:"imp10",text:"Bonnes performances des beaux livres voyages (VDM)", chapter:"performances", createdAt:"2026-05-22T08:09:00", imported:true },
+  { id:"imp1",  text:"Attention offre stick",                                                                               chapter:"alertes",      createdAt:"2026-05-22T08:00:00", imported:true },
+  { id:"imp2",  text:"Forte baisse en hyper Peppa — prudence sur navres PatPat (65% écoulement Osny à Noël)",              chapter:"alertes",      createdAt:"2026-05-22T08:01:00", imported:true },
+  { id:"imp3",  text:"Possibilité d'extraire fiches articles Compagnon en JPEG/PNG pour corps de mail",                    chapter:"propositions", createdAt:"2026-05-22T08:02:00", imported:true },
+  { id:"imp4",  text:"Dans les e-mails : alerter François avec EAN plutôt que nuart",                                      chapter:"logistique",   createdAt:"2026-05-22T08:03:00", imported:true },
+  { id:"imp5",  text:"CGT adresse Fosses à vérifier",                                                                      chapter:"logistique",   createdAt:"2026-05-22T08:04:00", imported:true },
+  { id:"imp6",  text:"Encore des soucis de livraison à Chambly",                                                           chapter:"logistique",   createdAt:"2026-05-22T08:05:00", imported:true },
+  { id:"imp7",  text:"Couverture France en train — à surveiller",                                                          chapter:"marche",       createdAt:"2026-05-22T08:06:00", imported:true },
+  { id:"imp8",  text:"Avoir dates de dispo Compagnon des BdC : coffrets sept, coffrets T4, Enjeux Jeun & Adultes, Noël",  chapter:"nouveautes",   createdAt:"2026-05-22T08:07:00", imported:true },
+  { id:"imp9",  text:"Création mobilier permanent assortiment coffrets (loisirs créa Eyrolles)",                           chapter:"operations",   createdAt:"2026-05-22T08:08:00", imported:true },
+  { id:"imp10", text:"Bonnes performances des beaux livres voyages (VDM)",                                                 chapter:"performances", createdAt:"2026-05-22T08:09:00", imported:true },
 ];
 
 const CALENDAR_EVENTS = [
@@ -112,48 +97,28 @@ const CALENDAR_EVENTS = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-const fmt = d => new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
-const fmtFull = d => new Date(d).toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
+const fmt     = d => new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
 const fmtTime = d => new Date(d).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-const daysLeft = d => Math.ceil((new Date(d)-new Date())/86400000);
-const load = (k,def) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{ return def; } };
-const save = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} };
+const daysLeft= d => Math.ceil((new Date(d)-new Date())/86400000);
+const load    = (k,def) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{ return def; } };
+const save    = (k,v)   => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} };
 
-function getCurrentPeriod() {
-  const now = new Date();
-  return SYNTHESE_PERIODS.find(p => now >= new Date(p.start) && now < new Date(p.end)) || SYNTHESE_PERIODS[0];
-}
-
-function getNextPeriod() {
-  const cur = getCurrentPeriod();
-  const idx = SYNTHESE_PERIODS.findIndex(p=>p.id===cur.id);
-  return SYNTHESE_PERIODS[idx+1]||null;
+function getCurrentPeriod(){
+  const now=new Date();
+  return SYNTHESE_PERIODS.find(p=>now>=new Date(p.start)&&now<new Date(p.end))||SYNTHESE_PERIODS[0];
 }
 
 function urgencyStyle(days){
-  if(days<0)  return {color:C.red,   bg:C.redLight,   label:"Dépassé"};
-  if(days===0)return {color:C.red,   bg:C.redLight,   label:"Aujourd'hui"};
-  if(days<=3) return {color:C.amber, bg:C.amberLight, label:`J-${days}`};
-  if(days<=10)return {color:C.accent,bg:C.accentLight,label:`J-${days}`};
-  return             {color:C.green, bg:C.greenLight,  label:`J-${days}`};
+  if(days<0)   return {color:C.red,   bg:C.redLight,   label:"Dépassé"};
+  if(days===0) return {color:C.red,   bg:C.redLight,   label:"Aujourd'hui"};
+  if(days<=3)  return {color:C.amber, bg:C.amberLight, label:`J-${days}`};
+  if(days<=10) return {color:C.accent,bg:C.accentLight,label:`J-${days}`};
+  return              {color:C.green, bg:C.greenLight,  label:`J-${days}`};
 }
 
 function chapterById(id){ return CHAPTERS.find(c=>c.id===id)||CHAPTERS[0]; }
-function compagnonTypeById(id){ return COMPAGNON_TYPES.find(t=>t.id===id)||COMPAGNON_TYPES[0]; }
 
 // ── UI Components ─────────────────────────────────────────────────────────────
-function Tag({chapter, size="sm"}){
-  const ch = chapterById(chapter);
-  const fs = size==="sm"?11:13;
-  return(
-    <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:fs,fontWeight:600,
-      background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`,
-      padding:"2px 8px",borderRadius:20,whiteSpace:"nowrap"}}>
-      {ch.emoji} {ch.label}
-    </span>
-  );
-}
-
 function Pill({children,color=C.accent,bg=C.accentLight}){
   return <span style={{fontSize:11,fontWeight:700,color,background:bg,padding:"2px 8px",borderRadius:20}}>{children}</span>;
 }
@@ -162,12 +127,11 @@ function Btn({onClick,children,variant="ghost",style={},disabled=false}){
   const base={border:"none",cursor:disabled?"not-allowed":"pointer",fontFamily:"inherit",
     borderRadius:8,fontSize:13,fontWeight:600,padding:"8px 16px",transition:"all .15s",opacity:disabled?.5:1};
   const variants={
-    ghost:{background:"transparent",color:C.muted},
+    ghost:  {background:"transparent",color:C.muted},
     primary:{background:C.accent,color:"#fff",boxShadow:`0 2px 8px ${C.accent}44`},
     outline:{background:"transparent",color:C.accent,border:`1.5px solid ${C.accent}`},
-    soft:{background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`},
-    danger:{background:C.redLight,color:C.red,border:`1px solid ${C.red}44`},
-    purple:{background:C.purpleLight,color:C.purple,border:`1px solid ${C.purple}44`},
+    soft:   {background:C.accentLight,color:C.accent,border:`1px solid ${C.accentBorder}`},
+    danger: {background:C.redLight,color:C.red,border:`1px solid ${C.red}44`},
   };
   return <button onClick={disabled?undefined:onClick} style={{...base,...variants[variant],...style}}>{children}</button>;
 }
@@ -185,10 +149,8 @@ function Modal({open,onClose,title,children,wide=false}){
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22}}>
           <span style={{fontWeight:700,fontSize:17,color:C.ink,letterSpacing:-.3}}>{title}</span>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",
-            fontSize:18,color:C.subtle,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",
-            borderRadius:8,transition:"background .15s"}}
-            onMouseOver={e=>e.target.style.background=C.border}
-            onMouseOut={e=>e.target.style.background="none"}>✕</button>
+            fontSize:18,color:C.subtle,width:32,height:32,display:"flex",alignItems:"center",
+            justifyContent:"center",borderRadius:8}}>✕</button>
         </div>
         {children}
       </div>
@@ -199,8 +161,7 @@ function Modal({open,onClose,title,children,wide=false}){
 const inputStyle = {
   background:C.bg, border:`1.5px solid ${C.border}`, color:C.ink,
   padding:"10px 14px", borderRadius:10, fontSize:14, outline:"none",
-  fontFamily:"inherit", width:"100%", boxSizing:"border-box",
-  transition:"border-color .15s",
+  fontFamily:"inherit", width:"100%", boxSizing:"border-box", transition:"border-color .15s",
 };
 
 // ── Voice hook ────────────────────────────────────────────────────────────────
@@ -235,10 +196,7 @@ function AIChat({period,notes}){
     if(initialized.current) return;
     initialized.current=true;
     const byChapter={};
-    notes.forEach(n=>{
-      if(!byChapter[n.chapter]) byChapter[n.chapter]=[];
-      byChapter[n.chapter].push(n.text);
-    });
+    notes.forEach(n=>{if(!byChapter[n.chapter])byChapter[n.chapter]=[];byChapter[n.chapter].push(n.text);});
     const intro=`Bonjour ! Je suis prêt pour le brainstorming de la **${period.label}** (compilation le ${fmt(period.end)}).\n\nJ'ai ${notes.length} note(s) réparties en ${Object.keys(byChapter).length} chapitre(s). Quelques questions pour affiner le rapport avant de le générer :`;
     setMessages([{role:"assistant",content:intro}]);
   },[]);
@@ -286,12 +244,9 @@ Ton : professionnel, concis, orienté action. En français.`,
         {messages.map((m,i)=>(
           <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
             <div style={{maxWidth:"85%",padding:"10px 14px",borderRadius:14,fontSize:14,lineHeight:1.65,
-              background:m.role==="user"?C.accent:C.bg,
-              color:m.role==="user"?"#fff":C.ink,
-              borderBottomRightRadius:m.role==="user"?3:14,
-              borderBottomLeftRadius:m.role==="assistant"?3:14,
-              border:m.role==="assistant"?`1px solid ${C.border}`:"none",
-              whiteSpace:"pre-wrap"}}>
+              background:m.role==="user"?C.accent:C.bg,color:m.role==="user"?"#fff":C.ink,
+              borderBottomRightRadius:m.role==="user"?3:14,borderBottomLeftRadius:m.role==="assistant"?3:14,
+              border:m.role==="assistant"?`1px solid ${C.border}`:"none",whiteSpace:"pre-wrap"}}>
               {m.content}
             </div>
           </div>
@@ -322,204 +277,212 @@ Ton : professionnel, concis, orienté action. En français.`,
               <Btn onClick={()=>navigator.clipboard.writeText(report)} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📋 Copier</Btn>
               <Btn onClick={()=>{
                 const sub=encodeURIComponent(`${period.label} — Synthèse terrain`);
-                const body=encodeURIComponent(report);
-                window.location.href=`mailto:?subject=${sub}&body=${body}`;
+                window.location.href=`mailto:?subject=${sub}&body=${encodeURIComponent(report)}`;
               }} variant="outline" style={{fontSize:12,padding:"5px 12px"}}>📧 Envoyer</Btn>
             </div>
           </div>
-          <div style={{fontSize:12,color:C.green}}>Le rapport sera structuré par chapitres selon vos notes terrain.</div>
         </div>
       )}
     </div>
   );
 }
 
-// ── Compagnon Tab ─────────────────────────────────────────────────────────────
-function CompagnonTab({reports,onAdd,onDelete}){
-  const [formOpen,setFormOpen]=useState(false);
-  const [typeFilter,setTypeFilter]=useState("all");
-  const [text,setText]=useState("");
-  const [type,setType]=useState("bug");
-  const [context,setContext]=useState("");
+// ── Note Card avec édition inline ─────────────────────────────────────────────
+function NoteCard({note, onDelete, onEdit, selectMode, selected, onToggleSelect}){
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(note.text);
+  const [editChapter, setEditChapter] = useState(note.chapter);
+  const ch = chapterById(note.chapter);
+  const isSel = selected;
 
-  function submit(){
-    if(!text.trim()) return;
-    onAdd({text:text.trim(),type,context:context.trim()});
-    setText(""); setContext(""); setType("bug"); setFormOpen(false);
+  function saveEdit(){
+    if(!editText.trim()) return;
+    onEdit(note.id, {text: editText.trim(), chapter: editChapter});
+    setEditing(false);
   }
 
-  const filtered=typeFilter==="all"?reports:reports.filter(r=>r.type===typeFilter);
-  const counts={};
-  reports.forEach(r=>{counts[r.type]=(counts[r.type]||0)+1;});
+  function cancelEdit(){
+    setEditText(note.text);
+    setEditChapter(note.chapter);
+    setEditing(false);
+  }
 
-  return(
-    <div>
-      {/* Header banner */}
-      <div style={{background:C.purpleLight,border:`1.5px solid ${C.purple}33`,borderRadius:12,
-        padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div>
-          <div style={{fontWeight:700,color:C.purple,fontSize:14,marginBottom:2}}>🛠 Compagnon — Suivi appli pro</div>
-          <div style={{fontSize:12,color:C.muted}}>{reports.length} signalement{reports.length!==1?"s":""} · bugs, améliorations, suggestions</div>
+  // ── Edit mode ──
+  if(editing){
+    return(
+      <div style={{background:C.surface,borderRadius:12,padding:"16px",
+        border:`2px solid ${C.accent}`,boxShadow:`0 0 0 3px ${C.accentLight}`}}>
+        {/* Sélecteur chapitre */}
+        <div style={{marginBottom:12}}>
+          <div style={{fontSize:11,color:C.muted,fontWeight:600,marginBottom:8}}>Chapitre</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+            {CHAPTERS.map(c=>(
+              <button key={c.id} onClick={()=>setEditChapter(c.id)} style={{
+                fontSize:11,fontWeight:600,padding:"4px 10px",borderRadius:20,cursor:"pointer",
+                fontFamily:"inherit",transition:"all .15s",
+                border:`1.5px solid ${editChapter===c.id?C.accent:C.border}`,
+                background:editChapter===c.id?C.accent:C.bg,
+                color:editChapter===c.id?"#fff":C.muted,
+              }}>{c.emoji} {c.label}</button>
+            ))}
+          </div>
         </div>
-        <Btn onClick={()=>setFormOpen(true)} variant="purple" style={{fontSize:12,padding:"7px 14px"}}>+ Signaler</Btn>
+        {/* Texte */}
+        <textarea value={editText} onChange={e=>setEditText(e.target.value)} rows={3}
+          autoFocus
+          style={{...inputStyle,resize:"vertical",marginBottom:12,lineHeight:1.6}}/>
+        <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn onClick={cancelEdit} variant="ghost" style={{fontSize:12,padding:"6px 12px"}}>Annuler</Btn>
+          <Btn onClick={saveEdit} variant="primary" style={{fontSize:12,padding:"6px 14px"}} disabled={!editText.trim()}>
+            ✓ Enregistrer
+          </Btn>
+        </div>
       </div>
+    );
+  }
 
-      {/* Type filter */}
-      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
-        <button onClick={()=>setTypeFilter("all")} style={{
-          fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"inherit",
-          background:typeFilter==="all"?C.purple:C.bg,
-          color:typeFilter==="all"?"#fff":C.muted,
-          border:`1px solid ${typeFilter==="all"?C.purple:C.border}`}}>
-          Tous ({reports.length})
-        </button>
-        {COMPAGNON_TYPES.map(t=>(
-          <button key={t.id} onClick={()=>setTypeFilter(t.id)} style={{
-            fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",fontFamily:"inherit",
-            background:typeFilter===t.id?t.color:C.bg,
-            color:typeFilter===t.id?"#fff":C.muted,
-            border:`1px solid ${typeFilter===t.id?t.color:C.border}`}}>
-            {t.emoji} {t.label} {counts[t.id]?`(${counts[t.id]})`:""}</button>
-        ))}
-      </div>
-
-      {/* List */}
-      {filtered.length===0
-        ? <div style={{textAlign:"center",color:C.subtle,padding:"50px 0",fontSize:14}}>
-            Aucun signalement.<br/>
-            <span style={{fontSize:12}}>Clique sur "+ Signaler" pour en ajouter un.</span>
+  // ── Read mode ──
+  return(
+    <div
+      onClick={()=>{ if(selectMode) onToggleSelect(); }}
+      style={{background:isSel?C.accentLight:C.surface, borderRadius:12, padding:"14px 16px",
+        border:`1.5px solid ${isSel?C.accent:C.border}`,
+        display:"flex", gap:12, alignItems:"flex-start",
+        transition:"all .15s", cursor:selectMode?"pointer":"default",
+        opacity:note.imported?.85:1}}>
+      {selectMode
+        ? <div style={{width:22,height:22,borderRadius:6,flexShrink:0,marginTop:1,
+            border:`2px solid ${isSel?C.accent:C.border}`,
+            background:isSel?C.accent:"transparent",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            color:"#fff",fontSize:13,fontWeight:700}}>
+            {isSel?"✓":""}
           </div>
-        : <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {filtered.map(r=>{
-              const t=compagnonTypeById(r.type);
-              return(
-                <div key={r.id} style={{background:C.surface,borderRadius:12,padding:"14px 16px",
-                  border:`1.5px solid ${C.border}`,display:"flex",gap:12,alignItems:"flex-start"}}>
-                  <span style={{fontSize:20,lineHeight:1,paddingTop:2}}>{t.emoji}</span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                      <span style={{fontSize:11,fontWeight:700,color:t.color,background:t.bg,
-                        padding:"2px 8px",borderRadius:20}}>{t.label}</span>
-                      <span style={{fontSize:11,color:C.subtle,fontFamily:"monospace"}}>
-                        {new Date(r.createdAt).toLocaleDateString("fr-FR")}
-                      </span>
-                    </div>
-                    <p style={{margin:"0 0 6px",fontSize:14,lineHeight:1.65,color:C.ink,fontWeight:600}}>{r.text}</p>
-                    {r.context&&(
-                      <p style={{margin:0,fontSize:13,lineHeight:1.55,color:C.muted}}>{r.context}</p>
-                    )}
-                  </div>
-                  <button onClick={()=>onDelete(r.id)}
-                    style={{background:"none",border:"none",color:C.subtle,cursor:"pointer",
-                      fontSize:16,padding:4,borderRadius:6,lineHeight:1,flexShrink:0,transition:"color .15s"}}
-                    onMouseOver={e=>e.currentTarget.style.color=C.red}
-                    onMouseOut={e=>e.currentTarget.style.color=C.subtle}>✕</button>
-                </div>
-              );
-            })}
-          </div>
+        : <div style={{fontSize:20,lineHeight:1,paddingTop:2}}>{ch.emoji}</div>
       }
-
-      {/* Export button */}
-      {reports.length>0&&(
-        <div style={{marginTop:16,display:"flex",gap:8}}>
-          <Btn onClick={()=>{
-            const lines=reports.map(r=>{
-              const t=compagnonTypeById(r.type);
-              return `[${t.label.toUpperCase()}] ${r.text}${r.context?"\n  Contexte : "+r.context:""}`;
-            }).join("\n\n");
-            const full=`COMPAGNON — Signalements appli pro\n${new Date().toLocaleDateString("fr-FR")}\n\n${lines}`;
-            navigator.clipboard.writeText(full);
-          }} variant="outline" style={{fontSize:12,padding:"6px 14px"}}>📋 Copier tout</Btn>
-          <Btn onClick={()=>{
-            const lines=reports.map(r=>{
-              const t=compagnonTypeById(r.type);
-              return `[${t.label.toUpperCase()}] ${r.text}${r.context?"\nContexte : "+r.context:""}`;
-            }).join("\n\n");
-            const full=`COMPAGNON — Signalements appli pro\n${new Date().toLocaleDateString("fr-FR")}\n\n${lines}`;
-            const sub=encodeURIComponent("Compagnon — Signalements appli pro");
-            window.location.href=`mailto:?subject=${sub}&body=${encodeURIComponent(full)}`;
-          }} variant="outline" style={{fontSize:12,padding:"6px 14px"}}>📧 Envoyer par mail</Btn>
+      <div style={{flex:1,minWidth:0}}>
+        <p style={{margin:"0 0 8px",fontSize:14,lineHeight:1.65,color:C.ink}}>{note.text}</p>
+        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+          <span style={{fontSize:11,color:C.subtle,fontFamily:"monospace"}}>
+            {new Date(note.createdAt).toLocaleDateString("fr-FR")}
+          </span>
+          <span style={{fontSize:11,color:C.subtle}}>·</span>
+          <span style={{fontSize:11,color:note.imported?C.subtle:C.accent,fontWeight:600}}>
+            {note.imported?"📥 Importé":getCurrentPeriod().label}
+          </span>
+          <span style={{fontSize:11,color:C.subtle}}>·</span>
+          <span style={{fontSize:11,color:C.muted}}>{ch.emoji} {ch.label}</span>
+        </div>
+      </div>
+      {/* Actions */}
+      {!selectMode&&(
+        <div style={{display:"flex",gap:4,flexShrink:0}}>
+          <button onClick={e=>{e.stopPropagation();setEditing(true);}}
+            title="Modifier"
+            style={{background:"none",border:"none",color:C.muted,cursor:"pointer",
+              fontSize:14,padding:4,borderRadius:6,lineHeight:1,transition:"color .15s"}}
+            onMouseOver={e=>e.currentTarget.style.color=C.accent}
+            onMouseOut={e=>e.currentTarget.style.color=C.muted}>✏️</button>
+          <button onClick={e=>{e.stopPropagation();onDelete(note.id);}}
+            title="Supprimer"
+            style={{background:"none",border:"none",color:C.subtle,cursor:"pointer",
+              fontSize:14,padding:4,borderRadius:6,lineHeight:1,transition:"color .15s"}}
+            onMouseOver={e=>e.currentTarget.style.color=C.red}
+            onMouseOut={e=>e.currentTarget.style.color=C.subtle}>✕</button>
         </div>
       )}
-
-      {/* Form modal */}
-      <Modal open={formOpen} onClose={()=>setFormOpen(false)} title="🛠 Nouveau signalement Compagnon">
-        <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          {/* Type selector */}
-          <div>
-            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:8,fontWeight:600}}>Type</label>
-            <div style={{display:"flex",gap:8}}>
-              {COMPAGNON_TYPES.map(t=>(
-                <button key={t.id} onClick={()=>setType(t.id)} style={{
-                  flex:1,padding:"10px 8px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",
-                  border:`1.5px solid ${type===t.id?t.color:C.border}`,
-                  background:type===t.id?t.bg:"transparent",
-                  color:type===t.id?t.color:C.muted,
-                  fontSize:12,fontWeight:700,transition:"all .15s",textAlign:"center"}}>
-                  <div style={{fontSize:18,marginBottom:4}}>{t.emoji}</div>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Description */}
-          <div>
-            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>
-              Description {type==="bug"?"du bug":"de l'amélioration / suggestion"}
-            </label>
-            <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} autoFocus
-              placeholder={type==="bug"?"Ex : L'export PDF plante quand le titre contient des accents…":"Ex : Ajouter un filtre par éditeur dans la liste articles…"}
-              style={{...inputStyle,resize:"none",lineHeight:1.6}}/>
-          </div>
-          {/* Contexte */}
-          <div>
-            <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>
-              Contexte / Étapes pour reproduire <span style={{fontWeight:400}}>(optionnel)</span>
-            </label>
-            <textarea value={context} onChange={e=>setContext(e.target.value)} rows={2}
-              placeholder="Ex : Visible sur iPhone 14, en visite chez EYROLLES…"
-              style={{...inputStyle,resize:"none",lineHeight:1.6}}/>
-          </div>
-          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-            <Btn onClick={()=>setFormOpen(false)}>Annuler</Btn>
-            <Btn onClick={submit} variant="primary" disabled={!text.trim()}>Enregistrer</Btn>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
+}
+
+// ── PWA Manifest helper ───────────────────────────────────────────────────────
+// Injecte dynamiquement un manifest PWA avec l'icône NF générée en SVG inline
+function injectPWAManifest(){
+  // SVG icône NF — fond bleu accent, lettres blanches Phenomena
+  const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="112" fill="#2B5A9E"/>
+    <text x="256" y="200" font-family="Georgia,serif" font-size="160" font-weight="900"
+      fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8">N</text>
+    <text x="256" y="360" font-family="Georgia,serif" font-size="120" font-weight="700"
+      fill="rgba(255,255,255,0.85)" text-anchor="middle" dominant-baseline="middle" letter-spacing="4">FLOW</text>
+    <!-- Points décoratifs palette -->
+    <circle cx="90" cy="90" r="18" fill="#F5C97A"/>
+    <circle cx="422" cy="90" r="14" fill="#2d7a4f"/>
+    <circle cx="90" cy="422" r="14" fill="#6B3FA0"/>
+    <circle cx="422" cy="422" r="18" fill="#c0392b"/>
+  </svg>`;
+
+  const svgBlob = new Blob([svgIcon], {type:"image/svg+xml"});
+  const svgUrl  = URL.createObjectURL(svgBlob);
+
+  const manifest = {
+    name: "NotesFlow",
+    short_name: "NF",
+    description: "Carnet de route terrain — commercial éditorial",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#fdf8f0",
+    theme_color: "#2B5A9E",
+    icons: [
+      {src:svgUrl, sizes:"512x512", type:"image/svg+xml", purpose:"any maskable"},
+    ]
+  };
+
+  const blob = new Blob([JSON.stringify(manifest)],{type:"application/json"});
+  const url  = URL.createObjectURL(blob);
+
+  // Supprime l'ancien manifest si présent
+  const existing = document.querySelector('link[rel="manifest"]');
+  if(existing) existing.remove();
+
+  const link = document.createElement("link");
+  link.rel  = "manifest";
+  link.href = url;
+  document.head.appendChild(link);
+
+  // Apple touch icon
+  const appleLink = document.createElement("link");
+  appleLink.rel  = "apple-touch-icon";
+  appleLink.href = svgUrl;
+  document.head.appendChild(appleLink);
+
+  // Theme color meta
+  let themeMeta = document.querySelector('meta[name="theme-color"]');
+  if(!themeMeta){
+    themeMeta = document.createElement("meta");
+    themeMeta.name = "theme-color";
+    document.head.appendChild(themeMeta);
+  }
+  themeMeta.content = "#2B5A9E";
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function NotesFlow(){
-  const [tab,setTab]=useState("notes");
-  const [notes,setNotes]=useState(()=>{
-    const saved=load("nf3_notes",[]);
-    if(saved.length===0) return IMPORTED_NOTES;
-    return saved;
+  const [tab,setTab]           = useState("notes");
+  const [notes,setNotes]       = useState(()=>{
+    const saved=load("nf4_notes",[]);
+    return saved.length===0 ? IMPORTED_NOTES : saved;
   });
-  const [compagnonReports,setCompagnonReports]=useState(()=>load("nf3_compagnon",[]));
 
-  const [captureOpen,setCaptureOpen]=useState(false);
-  const [voiceOpen,setVoiceOpen]=useState(false);
-  const [chatOpen,setChatOpen]=useState(false);
-  const [filterChapter,setFilterChapter]=useState("all");
-  const [selectMode,setSelectMode]=useState(false);
-  const [selected,setSelected]=useState(new Set());
-  const [confirmDelete,setConfirmDelete]=useState(null);
-  const [pendingDeleteId,setPendingDeleteId]=useState(null);
+  const [captureOpen,setCaptureOpen]   = useState(false);
+  const [voiceOpen,setVoiceOpen]       = useState(false);
+  const [chatOpen,setChatOpen]         = useState(false);
+  const [filterChapter,setFilterChapter] = useState("all");
+  const [selectMode,setSelectMode]     = useState(false);
+  const [selected,setSelected]         = useState(new Set());
+  const [confirmDelete,setConfirmDelete] = useState(null);
+  const [pendingDeleteId,setPendingDeleteId] = useState(null);
 
-  const [noteText,setNoteText]=useState("");
-  const [noteChapter,setNoteChapter]=useState("marche");
+  // Capture form
+  const [noteText,setNoteText]         = useState("");
+  const [noteChapter,setNoteChapter]   = useState("marche");
 
-  const currentPeriod=getCurrentPeriod();
-  const nextPeriod=getNextPeriod();
-  const daysToCompile=daysLeft(currentPeriod.end);
-  const urg=urgencyStyle(daysToCompile);
+  const currentPeriod = getCurrentPeriod();
+  const daysToCompile = daysLeft(currentPeriod.end);
+  const urg           = urgencyStyle(daysToCompile);
 
-  useEffect(()=>save("nf3_notes",notes),[notes]);
-  useEffect(()=>save("nf3_compagnon",compagnonReports),[compagnonReports]);
+  useEffect(()=>save("nf4_notes",notes),[notes]);
+  useEffect(()=>{ injectPWAManifest(); },[]);
 
   useEffect(()=>{
     const h=e=>{if(e.ctrlKey&&e.key===" "){e.preventDefault();setCaptureOpen(true);}};
@@ -532,36 +495,39 @@ export default function NotesFlow(){
   function addNote(){
     if(!noteText.trim()) return;
     const note={
-      id:Date.now(),text:noteText.trim(),chapter:noteChapter,
-      createdAt:new Date().toISOString(),period:currentPeriod.id,imported:false,
+      id:Date.now(), text:noteText.trim(), chapter:noteChapter,
+      createdAt:new Date().toISOString(), period:currentPeriod.id, imported:false,
     };
     setNotes(prev=>[note,...prev]);
     setNoteText(""); setCaptureOpen(false);
   }
 
-  function addCompagnonReport({text,type,context}){
-    const r={id:Date.now(),text,type,context,createdAt:new Date().toISOString()};
-    setCompagnonReports(prev=>[r,...prev]);
+  // ── Édition note ──
+  function editNote(id, {text, chapter}){
+    setNotes(prev=>prev.map(n=> n.id===id ? {...n, text, chapter, editedAt:new Date().toISOString()} : n));
   }
 
-  function deleteCompagnonReport(id){
-    setCompagnonReports(prev=>prev.filter(r=>r.id!==id));
+  // ── Suppression ──
+  function requestDelete(id){
+    setPendingDeleteId(id);
+    setConfirmDelete("single");
   }
 
-  // Notes filtrées (on exclut compagnon de la liste normale)
-  const periodNotes=notes.filter(n=>(n.period===currentPeriod.id||n.imported)&&n.chapter!=="compagnon");
-  const filteredNotes=filterChapter==="all"?periodNotes:periodNotes.filter(n=>n.chapter===filterChapter);
+  // Notes filtrées — tous chapitres inclus (compagnon aussi)
+  const periodNotes   = notes.filter(n=>n.period===currentPeriod.id||n.imported);
+  const filteredNotes = filterChapter==="all"
+    ? periodNotes
+    : periodNotes.filter(n=>n.chapter===filterChapter);
 
-  const chapterCounts={};
-  periodNotes.forEach(n=>{chapterCounts[n.chapter]=(chapterCounts[n.chapter]||0)+1;});
+  const chapterCounts = {};
+  periodNotes.forEach(n=>{ chapterCounts[n.chapter]=(chapterCounts[n.chapter]||0)+1; });
 
-  const upcomingEvents=CALENDAR_EVENTS.filter(e=>new Date(e.start)>=new Date()).slice(0,15);
+  const upcomingEvents = CALENDAR_EVENTS.filter(e=>new Date(e.start)>=new Date()).slice(0,15);
 
   const tabs=[
-    {key:"notes",     icon:"📝", label:"Notes"},
-    {key:"planning",  icon:"🗓", label:"Planning"},
-    {key:"synthese",  icon:"⚡", label:"Synthèse"},
-    {key:"compagnon", icon:"🛠", label:"Compagnon", badge:compagnonReports.length||null},
+    {key:"notes",    icon:"📝", label:"Notes"},
+    {key:"planning", icon:"🗓", label:"Planning"},
+    {key:"synthese", icon:"⚡", label:"Synthèse"},
   ];
 
   return(
@@ -572,8 +538,8 @@ export default function NotesFlow(){
         <div style={{padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div>
             <div style={{display:"flex",alignItems:"baseline",gap:10}}>
-              <span style={{fontSize:20,fontWeight:800,color:C.accent,letterSpacing:-1,fontFamily:"inherit"}}>NotesFlow</span>
-              <span style={{fontSize:11,color:C.subtle,fontFamily:"'Nunito', sans-serif"}}>
+              <span style={{fontSize:20,fontWeight:800,color:C.accent,letterSpacing:-1}}>NotesFlow</span>
+              <span style={{fontSize:11,color:C.subtle}}>
                 {periodNotes.filter(n=>!n.imported).length} note{periodNotes.filter(n=>!n.imported).length!==1?"s":""} · {currentPeriod.label}
               </span>
             </div>
@@ -589,9 +555,7 @@ export default function NotesFlow(){
               title="Dicter une note"
               style={{width:38,height:38,borderRadius:10,background:C.bg,border:`1.5px solid ${C.border}`,
                 color:voice.listening?C.red:C.muted,fontSize:17,cursor:"pointer",
-                display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
-              🎙
-            </button>
+                display:"flex",alignItems:"center",justifyContent:"center"}}>🎙</button>
             <button onClick={()=>setCaptureOpen(true)}
               title="Nouvelle note (Ctrl+Espace)"
               style={{height:38,padding:"0 16px",borderRadius:10,background:C.accent,border:"none",
@@ -605,17 +569,14 @@ export default function NotesFlow(){
 
         {/* Tabs */}
         <div style={{display:"flex",paddingLeft:20,borderTop:`1px solid ${C.border}`}}>
-          {tabs.map(({key,icon,label,badge})=>(
+          {tabs.map(({key,icon,label})=>(
             <button key={key} onClick={()=>setTab(key)} style={{
               padding:"10px 14px",border:"none",background:"transparent",cursor:"pointer",
               fontFamily:"inherit",fontSize:13,fontWeight:tab===key?700:400,
-              color:tab===key?(key==="compagnon"?C.purple:C.accent):C.muted,
-              borderBottom:tab===key?`2px solid ${key==="compagnon"?C.purple:C.accent}`:"2px solid transparent",
-              transition:"all .15s",display:"flex",alignItems:"center",gap:5,position:"relative",
-            }}>
+              color:tab===key?C.accent:C.muted,
+              borderBottom:tab===key?`2px solid ${C.accent}`:"2px solid transparent",
+              transition:"all .15s",display:"flex",alignItems:"center",gap:5}}>
               {icon} {label}
-              {badge&&<span style={{fontSize:10,fontWeight:700,background:C.purple,color:"#fff",
-                borderRadius:10,padding:"1px 5px",marginLeft:2}}>{badge}</span>}
             </button>
           ))}
         </div>
@@ -627,106 +588,77 @@ export default function NotesFlow(){
         {/* NOTES TAB */}
         {tab==="notes"&&(
           <div>
+            {/* Filtres chapitres — tous inclus */}
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
               <button onClick={()=>setFilterChapter("all")} style={{
-                fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
+                fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",
+                fontFamily:"inherit",
                 background:filterChapter==="all"?C.accent:C.bg,
                 color:filterChapter==="all"?"#fff":C.muted,
-                border:`1px solid ${filterChapter==="all"?C.accent:C.border}`,fontFamily:"inherit",
-              }}>Tous ({periodNotes.length})</button>
-              {CHAPTERS.filter(c=>c.id!=="compagnon"&&chapterCounts[c.id]).map(c=>(
+                border:`1px solid ${filterChapter==="all"?C.accent:C.border}`}}>
+                Tous ({periodNotes.length})
+              </button>
+              {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
                 <button key={c.id} onClick={()=>setFilterChapter(c.id)} style={{
-                  fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,border:"none",cursor:"pointer",
+                  fontSize:12,fontWeight:600,padding:"5px 12px",borderRadius:20,cursor:"pointer",
+                  fontFamily:"inherit",
                   background:filterChapter===c.id?C.accent:C.bg,
                   color:filterChapter===c.id?"#fff":C.muted,
-                  border:`1px solid ${filterChapter===c.id?C.accent:C.border}`,fontFamily:"inherit",
-                }}>{c.emoji} {c.label} {chapterCounts[c.id]>1?`(${chapterCounts[c.id]})`:""}</button>
+                  border:`1px solid ${filterChapter===c.id?C.accent:C.border}`}}>
+                  {c.emoji} {c.label} {chapterCounts[c.id]>1?`(${chapterCounts[c.id]})`:""}</button>
               ))}
             </div>
 
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            {/* Toolbar sélection */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:6}}>
               <Btn onClick={()=>{setSelectMode(s=>!s);setSelected(new Set());}}
-                variant={selectMode?"soft":"ghost"}
-                style={{fontSize:12,padding:"5px 12px"}}>
+                variant={selectMode?"soft":"ghost"} style={{fontSize:12,padding:"5px 12px"}}>
                 {selectMode?"✕ Annuler":"☑ Sélectionner"}
               </Btn>
-              {selectMode&&selected.size>0&&(
-                <Btn onClick={()=>setConfirmDelete("multi")} variant="danger"
-                  style={{fontSize:12,padding:"5px 12px"}}>
-                  🗑 Supprimer ({selected.size})
-                </Btn>
-              )}
               {selectMode&&filteredNotes.length>0&&(
                 <Btn onClick={()=>setSelected(new Set(filteredNotes.map(n=>n.id)))}
                   variant="ghost" style={{fontSize:12,padding:"5px 12px"}}>
                   Tout sélectionner
                 </Btn>
               )}
+              {selectMode&&selected.size>0&&(
+                <Btn onClick={()=>setConfirmDelete("multi")} variant="danger"
+                  style={{fontSize:12,padding:"5px 12px"}}>
+                  🗑 Supprimer ({selected.size})
+                </Btn>
+              )}
             </div>
 
+            {/* Liste notes */}
             {filteredNotes.length===0
               ? <div style={{textAlign:"center",color:C.subtle,padding:"60px 0",fontSize:15}}>
                   Aucune note dans ce chapitre.<br/>
                   <span style={{fontSize:13}}>Appuie sur + Note ou Ctrl+Espace.</span>
                 </div>
               : <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                  {filteredNotes.map(note=>{
-                    const ch=chapterById(note.chapter);
-                    const isSel=selected.has(note.id);
-                    return(
-                      <div key={note.id}
-                        onClick={()=>{
-                          if(!selectMode) return;
-                          setSelected(prev=>{
-                            const next=new Set(prev);
-                            next.has(note.id)?next.delete(note.id):next.add(note.id);
-                            return next;
-                          });
-                        }}
-                        style={{background:isSel?C.accentLight:C.surface,borderRadius:12,padding:"14px 16px",
-                          border:`1.5px solid ${isSel?C.accent:C.border}`,
-                          display:"flex",gap:12,alignItems:"flex-start",
-                          transition:"all .15s",cursor:selectMode?"pointer":"default",
-                          opacity:note.imported?.85:1}}>
-                        {selectMode
-                          ? <div style={{width:22,height:22,borderRadius:6,flexShrink:0,marginTop:1,
-                              border:`2px solid ${isSel?C.accent:C.border}`,
-                              background:isSel?C.accent:"transparent",
-                              display:"flex",alignItems:"center",justifyContent:"center",
-                              color:"#fff",fontSize:13,fontWeight:700}}>
-                              {isSel?"✓":""}
-                            </div>
-                          : <div style={{fontSize:20,lineHeight:1,paddingTop:2}}>{ch.emoji}</div>
-                        }
-                        <div style={{flex:1,minWidth:0}}>
-                          <p style={{margin:"0 0 8px",fontSize:14,lineHeight:1.65,color:C.ink}}>{note.text}</p>
-                          <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <span style={{fontSize:11,color:C.subtle,fontFamily:"monospace"}}>
-                              {new Date(note.createdAt).toLocaleDateString("fr-FR")}
-                            </span>
-                            <span style={{fontSize:11,color:C.subtle}}>·</span>
-                            <span style={{fontSize:11,color:note.imported?C.subtle:C.accent,fontWeight:600}}>
-                              {note.imported?"📥 Importé":currentPeriod.label}
-                            </span>
-                            {selectMode&&<span style={{fontSize:11,color:C.subtle}}>· {ch.emoji} {ch.label}</span>}
-                          </div>
-                        </div>
-                        {!selectMode&&(
-                          <button onClick={e=>{e.stopPropagation();setPendingDeleteId(note.id);setConfirmDelete("single");}}
-                            style={{background:"none",border:"none",color:C.subtle,cursor:"pointer",
-                              fontSize:16,padding:4,borderRadius:6,lineHeight:1,flexShrink:0,
-                              transition:"color .15s"}}
-                            onMouseOver={e=>e.currentTarget.style.color=C.red}
-                            onMouseOut={e=>e.currentTarget.style.color=C.subtle}>✕</button>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {filteredNotes.map(note=>(
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      onDelete={requestDelete}
+                      onEdit={editNote}
+                      selectMode={selectMode}
+                      selected={selected.has(note.id)}
+                      onToggleSelect={()=>{
+                        setSelected(prev=>{
+                          const next=new Set(prev);
+                          next.has(note.id)?next.delete(note.id):next.add(note.id);
+                          return next;
+                        });
+                      }}
+                    />
+                  ))}
                 </div>
             }
           </div>
         )}
 
+        {/* Confirm delete */}
         {confirmDelete&&(
           <Modal open={true} onClose={()=>{setConfirmDelete(null);setPendingDeleteId(null);}}
             title="🗑 Confirmer la suppression">
@@ -758,7 +690,8 @@ export default function NotesFlow(){
               Calendrier Client important · {upcomingEvents.length} prochains RDV
             </div>
             <div style={{background:C.accentLight,border:`1.5px solid ${C.accentBorder}`,
-              borderRadius:12,padding:"14px 16px",marginBottom:18,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              borderRadius:12,padding:"14px 16px",marginBottom:18,
+              display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
                 <div style={{fontWeight:700,color:C.accent,fontSize:14}}>⚡ {currentPeriod.label}</div>
                 <div style={{fontSize:12,color:C.muted,marginTop:2}}>
@@ -778,7 +711,7 @@ export default function NotesFlow(){
                     display:"flex",gap:14,alignItems:"center"}}>
                     <div style={{minWidth:40,textAlign:"center",background:isToday?C.accent:C.bg,
                       borderRadius:8,padding:"6px 4px",border:`1px solid ${isToday?C.accent:C.border}`}}>
-                      <div style={{fontSize:9,fontWeight:700,color:isToday?"#fff":C.muted,letterSpacing:.5,
+                      <div style={{fontSize:9,fontWeight:700,color:isToday?"#fff":C.muted,
                         textTransform:"uppercase",fontFamily:"monospace"}}>
                         {new Date(ev.start).toLocaleDateString("fr-FR",{weekday:"short"})}
                       </div>
@@ -809,14 +742,12 @@ export default function NotesFlow(){
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
                 <div>
                   <div style={{fontWeight:800,fontSize:17,color:C.ink,marginBottom:4}}>{currentPeriod.label}</div>
-                  <div style={{fontSize:13,color:C.muted}}>
-                    {fmt(currentPeriod.start)} → {fmt(currentPeriod.end)}
-                  </div>
+                  <div style={{fontSize:13,color:C.muted}}>{fmt(currentPeriod.start)} → {fmt(currentPeriod.end)}</div>
                 </div>
                 <Pill color={urg.color} bg={urg.bg}>{urg.label}</Pill>
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}>
-                {CHAPTERS.filter(c=>c.id!=="compagnon"&&chapterCounts[c.id]).map(c=>(
+                {CHAPTERS.filter(c=>chapterCounts[c.id]).map(c=>(
                   <div key={c.id} style={{display:"flex",alignItems:"center",gap:10}}>
                     <span style={{fontSize:14}}>{c.emoji}</span>
                     <span style={{fontSize:13,color:C.muted,flex:1}}>{c.label}</span>
@@ -828,13 +759,13 @@ export default function NotesFlow(){
                   </div>
                 ))}
               </div>
-              <Btn onClick={()=>setChatOpen(true)} variant="primary" style={{width:"100%",justifyContent:"center",display:"flex"}}>
+              <Btn onClick={()=>setChatOpen(true)} variant="primary"
+                style={{width:"100%",justifyContent:"center",display:"flex"}}>
                 💬 Lancer le brainstorming & générer le rapport
               </Btn>
             </div>
-            <div style={{fontSize:12,color:C.muted,marginBottom:10,fontWeight:600,letterSpacing:.5,textTransform:"uppercase"}}>
-              Calendrier des synthèses
-            </div>
+            <div style={{fontSize:12,color:C.muted,marginBottom:10,fontWeight:600,
+              letterSpacing:.5,textTransform:"uppercase"}}>Calendrier des synthèses</div>
             {SYNTHESE_PERIODS.map(p=>{
               const days=daysLeft(p.end);
               const u=urgencyStyle(days);
@@ -858,15 +789,6 @@ export default function NotesFlow(){
             })}
           </div>
         )}
-
-        {/* COMPAGNON TAB */}
-        {tab==="compagnon"&&(
-          <CompagnonTab
-            reports={compagnonReports}
-            onAdd={addCompagnonReport}
-            onDelete={deleteCompagnonReport}
-          />
-        )}
       </div>
 
       {/* ── Capture Modal ── */}
@@ -878,14 +800,15 @@ export default function NotesFlow(){
         <div style={{marginBottom:12}}>
           <label style={{fontSize:12,color:C.muted,display:"block",marginBottom:6,fontWeight:600}}>Chapitre</label>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {CHAPTERS.filter(c=>c.id!=="compagnon").map(c=>(
+            {CHAPTERS.map(c=>(
               <button key={c.id} onClick={()=>setNoteChapter(c.id)} style={{
                 fontSize:12,fontWeight:600,padding:"6px 12px",borderRadius:20,
                 border:`1.5px solid ${noteChapter===c.id?C.accent:C.border}`,
                 background:noteChapter===c.id?C.accent:C.bg,
                 color:noteChapter===c.id?"#fff":C.muted,
-                cursor:"pointer",fontFamily:"inherit",transition:"all .15s",
-              }}>{c.emoji} {c.label}</button>
+                cursor:"pointer",fontFamily:"inherit",transition:"all .15s"}}>
+                {c.emoji} {c.label}
+              </button>
             ))}
           </div>
         </div>
@@ -895,7 +818,7 @@ export default function NotesFlow(){
           style={{...inputStyle,resize:"vertical",marginBottom:16,lineHeight:1.6}}/>
         <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
           <Btn onClick={()=>setCaptureOpen(false)}>Annuler</Btn>
-          <Btn onClick={addNote} variant="primary">Enregistrer ⌘↵</Btn>
+          <Btn onClick={addNote} variant="primary" disabled={!noteText.trim()}>Enregistrer ⌘↵</Btn>
         </div>
       </Modal>
 
@@ -905,10 +828,7 @@ export default function NotesFlow(){
           <div style={{width:72,height:72,borderRadius:"50%",margin:"0 auto 16px",
             background:voice.listening?C.redLight:C.bg,
             border:`2px solid ${voice.listening?C.red:C.border}`,
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,
-            transition:"all .3s",animation:voice.listening?"ripple 1.5s infinite":undefined}}>
-            🎙
-          </div>
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,transition:"all .3s"}}>🎙</div>
           <p style={{fontWeight:700,color:voice.listening?C.red:C.muted,marginBottom:12}}>
             {voice.listening?"Parle maintenant…":"Traitement en cours…"}
           </p>
@@ -938,13 +858,13 @@ export default function NotesFlow(){
 
       <style>{`
         * { box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap');
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(192,57,43,.3)} 70%{box-shadow:0 0 0 12px rgba(192,57,43,0)} 100%{box-shadow:0 0 0 0 rgba(192,57,43,0)} }
         ::-webkit-scrollbar{width:4px;height:4px}
         ::-webkit-scrollbar-track{background:transparent}
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap');
         ::-webkit-scrollbar-thumb{background:#d4c9b8;border-radius:4px}
-        textarea:focus, input:focus, select:focus { border-color: #2B5A9E !important; }
+        textarea:focus, input:focus { border-color: #2B5A9E !important; }
         button:active { transform: scale(.97); }
       `}</style>
     </div>
